@@ -554,8 +554,9 @@
         à Página Inicial</a>
       <a href="utilizar.html" class="btn btn-secondary-outline"><i class="fas fa-question-circle"></i> Como
         utilizar</a>
-      <button class="btn btn-info" id="btnNovaConsulta" style="display: none; margin-left: 10px;"><i
-          class="fas fa-sync-alt"></i> Nova Análise (Recarregar)</button>
+      <button class="btn btn-info" id="btnNovaConsulta" style="display: none; margin-left: 10px;">
+        <i class="fas fa-sync-alt"></i> Nova Análise (Recarregar)
+      </button>
       <button class="btn btn-primary" id="btnEnviarAnalise" onclick="enviarParaAnalise()" style="margin-left: auto;"><i
           class="fas fa-paper-plane"></i> Enviar Dados para Análise</button>
     </div>
@@ -609,6 +610,10 @@
       const overlay = document.getElementById(modalId);
       if (overlay) overlay.classList.add('active');
     }
+
+    document.getElementById('btnNovaConsulta').addEventListener('click', function () {
+      location.reload();
+    });
 
     function closeModal(modalId) {
       const modal = document.getElementById(modalId);
@@ -683,6 +688,11 @@
         location.reload();
       });
     }
+
+      document.getElementById('btnNovaConsulta').addEventListener('click', function () {
+          // Recarrega a página ignorando o cache
+          window.location.href = 'IA/teste.html?nocache=' + new Date().getTime();
+        });
 
     function escapeHtml(unsafe) {
       if (typeof unsafe !== 'string') {
