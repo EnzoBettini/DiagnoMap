@@ -761,7 +761,7 @@
       const jsonPayload = { dados: dadosArray };
       resultadoDiv.innerHTML = '<p class="loading-message"><i class="fas fa-spinner fa-spin"></i> Enviando e processando...</p>';
 
-      const API_URL = 'http://localhost:3001/analise';
+      const API_URL = '/analise'
 
       try {
         const resp = await fetch(API_URL, {
