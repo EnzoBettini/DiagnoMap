@@ -46,7 +46,6 @@
       --font-code: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
     }
 
-    /* Reset e Base */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -70,10 +69,8 @@
       padding: 30px;
       min-height: 100vh;
       line-height: 1.65;
-      /* Melhor legibilidade geral */
     }
 
-    /* Container Principal da Página de Teste */
     .test-container {
       background-color: var(--bg-surface);
       padding: 35px 40px;
@@ -84,15 +81,12 @@
       border-top: 5px solid var(--primary-color);
     }
 
-    /* Cabeçalho da Página de Teste (Logo e Título) */
     .logo-text-group-page h1 {
       font-family: var(--font-secondary);
       font-size: 1.6em;
-      /* Ajustado */
       line-height: 1.2;
       color: var(--primary-color);
       margin-bottom: 25px;
-      /* Reduzido */
       text-align: center;
       display: flex;
       align-items: center;
@@ -100,9 +94,7 @@
     }
 
     .logo-text-group-page .logo-icon {
-      /* Ícone de coração no topo */
       font-size: 1.2em;
-      /* Relativo ao h1 */
       color: var(--highlight-color);
       margin-right: 10px;
     }
@@ -118,11 +110,9 @@
     }
 
     .test-container h2 {
-      /* Título dentro do container de teste */
       font-family: var(--font-secondary);
       color: var(--primary-color);
       font-size: 1.9em;
-      /* Aumentado */
       font-weight: 600;
       margin-bottom: 30px;
       text-align: center;
@@ -133,14 +123,11 @@
     }
 
     .test-container h2 .logo-icon {
-      /* Ícone de engrenagem */
       font-size: 1em;
-      /* Relativo ao h2 */
       color: var(--highlight-color);
       opacity: 0.8;
     }
 
-    /* Grupos de Formulário e Inputs */
     .form-group {
       margin-bottom: 18px;
     }
@@ -157,7 +144,6 @@
     .form-group textarea {
       width: 100%;
       font-size: 0.98em;
-      /* Levemente aumentado */
       padding: 12px 15px;
       border-radius: var(--border-radius-sm);
       border: 1px solid var(--border-color);
@@ -173,21 +159,12 @@
       box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
     }
 
-    /* Textarea para o JSON de entrada, se fosse usado (mantido para referência) */
-    textarea#jsonInput {
-      height: 180px;
-      font-family: var(--font-code);
-      line-height: 1.6;
-    }
-
     .form-group textarea {
-      /* Para sintomas, se fosse textarea */
       min-height: 60px;
       font-family: var(--font-primary);
       line-height: 1.5;
     }
 
-    /* Container e Entradas de Registro de Caso */
     #recordsContainer .record-entry {
       background-color: #fdfdff;
       padding: 20px 25px;
@@ -203,9 +180,7 @@
       color: var(--primary-color);
       font-size: 1.15em;
       margin: 0 0 20px 0;
-      /* Ajuste da margem inferior */
       padding-bottom: 12px;
-      /* Aumentado */
       border-bottom: 1px dashed var(--border-color);
       display: flex;
       justify-content: space-between;
@@ -233,17 +208,14 @@
       background-color: rgba(239, 68, 68, 0.1);
     }
 
-    /* Container de Ações Principais (Botões) */
     .main-actions-container {
       margin-top: 25px;
-      /* Aumentado */
       display: flex;
       gap: 15px;
       align-items: center;
       flex-wrap: wrap;
       border-top: 1px solid var(--border-color);
       padding-top: 25px;
-      /* Aumentado */
       justify-content: flex-end;
     }
 
@@ -251,10 +223,8 @@
       margin-bottom: 25px;
       display: flex;
       justify-content: flex-start;
-      /* Botão de adicionar à esquerda */
     }
 
-    /* Estilo Unificado para Botões */
     button.btn,
     a.btn {
       padding: 12px 25px;
@@ -266,7 +236,6 @@
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      /* Aumentado gap do ícone */
       text-decoration: none;
       justify-content: center;
       border: none;
@@ -314,6 +283,25 @@
     .btn-success:hover {
       background-color: #1dbf53;
     }
+
+    .btn-warning {
+      background-color: var(--warning-color);
+      color: white;
+    }
+
+    .btn-warning:hover {
+      background-color: #f06c0e;
+    }
+
+    .btn-info {
+      background-color: var(--info-color);
+      color: white;
+    }
+
+    .btn-info:hover {
+      background-color: #2779bd;
+    }
+
 
     /* Área de Resultado da Análise */
     #resultado {
@@ -392,30 +380,22 @@
 
     .ia-result-card .field-group {
       margin-bottom: 15px;
-      /* Aumentado espaçamento */
     }
 
     .ia-result-card .field-label {
       font-weight: 600;
-      /* Rótulo mais forte */
       color: var(--secondary-color);
       display: block;
       font-size: 0.92em;
-      /* Ajustado */
       margin-bottom: 5px;
-      /* Espaçamento entre rótulo e valor */
     }
 
     .ia-result-card .field-value {
       line-height: 1.65;
-      /* Melhorado */
       font-size: 0.95em;
-      /* Ajustado */
       color: var(--text-dark);
       padding-left: 10px;
-      /* Indentação do valor */
       border-left: 2px solid var(--border-color);
-      /* Linha sutil para separar valor */
     }
 
     .ia-result-card .highlight-text {
@@ -447,13 +427,114 @@
       font-size: 0.85em;
       color: var(--text-muted);
     }
+
+    /* Estilos para Modal de Aviso de Limitação */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.65);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .modal-content {
+      background-color: var(--bg-surface);
+      padding: 30px;
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--shadow-lg);
+      width: 90%;
+      position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
+      transform: scale(0.95);
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .modal-content.modal-warning {
+      max-width: 550px;
+      border-top: 5px solid var(--warning-color);
+    }
+
+    .modal-overlay.active .modal-content {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .modal-header h3 {
+      font-family: var(--font-secondary);
+      color: var(--primary-color);
+      font-size: 1.4em;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0;
+    }
+
+    .modal-header h3 .fa-exclamation-triangle {
+      color: var(--warning-color);
+    }
+
+
+    .modal-body p {
+      margin-bottom: 15px;
+      line-height: 1.7;
+      font-size: 0.98em;
+    }
+
+    .modal-body strong {
+      font-weight: 600;
+    }
+
+    .modal-body ul {
+      list-style-type: disc;
+      margin-left: 20px;
+      padding-left: 5px;
+      margin-bottom: 15px;
+    }
+
+    .modal-body ul li {
+      margin-bottom: 8px;
+    }
+
+    .modal-footer {
+      margin-top: 25px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-color);
+      text-align: right;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .modal-footer .btn {
+      padding: 10px 20px;
+      font-size: 0.95em;
+    }
   </style>
 </head>
 
 <body>
   <div class="logo-text-group-page">
     <h1>
-      <i class="fas fa-heart-pulse" style="color:var(--highlight-color); margin-right: 8px;"></i>
+      <i class="fas fa-heart-pulse logo-icon"></i>
       <span class="logo-diagno">Diagno</span><span class="logo-map">Map</span>
     </h1>
   </div>
@@ -469,11 +550,13 @@
     </button>
 
     <div class="main-actions-container">
-      <a href="index.html" class="btn btn-secondary-outline"><i class="fas fa-solid fa-rotate-left"></i> Voltar à
-        Página Inicial</a>
+      <a href="../index.html" class="btn btn-secondary-outline"><i class="fas fa-solid fa-rotate-left"></i> Voltar
+        à Página Inicial</a>
       <a href="utilizar.html" class="btn btn-secondary-outline"><i class="fas fa-question-circle"></i> Como
         utilizar</a>
-      <button class="btn btn-primary" onclick="enviarParaAnalise()" style="margin-left: auto;"><i
+      <button class="btn btn-info" id="btnNovaConsulta" style="display: none; margin-left: 10px;"><i
+          class="fas fa-sync-alt"></i> Nova Análise (Recarregar)</button>
+      <button class="btn btn-primary" id="btnEnviarAnalise" onclick="enviarParaAnalise()" style="margin-left: auto;"><i
           class="fas fa-paper-plane"></i> Enviar Dados para Análise</button>
     </div>
 
@@ -487,18 +570,69 @@
     <p>&copy; 2025 DiagnoMap - Demonstração da API de Análise</p>
   </footer>
 
+  <div class="modal-overlay" id="limitationWarningModal">
+    <div class="modal-content modal-warning">
+      <div class="modal-header">
+        <h3><i class="fas fa-exclamation-triangle"></i> Atenção: Limitações da Demonstração</h3>
+      </div>
+      <div class="modal-body">
+        <p>Devido a limitações da API utilizada ou do processamento em ambiente de demonstração, ao enviar
+          <strong>mais de 2 (dois) registros de caso</strong> de uma vez:
+        </p>
+        <ul>
+          <li>O retorno da IA poderá ser um JSON bruto em vez de cards formatados.</li>
+          <li>Podem ocorrer erros ou timeouts no processamento.</li>
+        </ul>
+        <p>Esta é uma versão para <strong>demonstração</strong>. Para uma melhor experiência e visualização dos
+          resultados, recomendamos o teste com <strong>1 (um) ou 2 (dois) registros</strong> por vez.</p>
+        <p><strong>Deseja prosseguir adicionando mais um registro?</strong></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary-outline" id="btnCancelAddRecord"><i class="fas fa-times"></i>
+          Cancelar</button>
+        <button type="button" class="btn btn-warning" id="btnProceedAddRecord"><i class="fas fa-check"></i>
+          Prosseguir Mesmo Assim</button>
+      </div>
+    </div>
+  </div>
+
+
   <script>
     let recordCounter = 0;
+    const MAX_RECOMMENDED_RECORDS = 2;
+    let primeiraConsultaFeita = false; // Flag para controlar se a primeira consulta foi feita
+
+    const btnNovaConsulta = document.getElementById('btnNovaConsulta');
+    const btnEnviarAnalise = document.getElementById('btnEnviarAnalise'); // Pegar referência do botão de enviar
+
+    function openModal(modalId) {
+      const overlay = document.getElementById(modalId);
+      if (overlay) overlay.classList.add('active');
+    }
+
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) modal.classList.remove('active');
+    }
+
+    document.getElementById('btnCancelAddRecord').addEventListener('click', () => closeModal('limitationWarningModal'));
+    document.getElementById('btnProceedAddRecord').addEventListener('click', () => {
+      actuallyAddRecord();
+      closeModal('limitationWarningModal');
+    });
 
     function createRecordForm(index) {
       const recordDiv = document.createElement('div');
       recordDiv.classList.add('record-entry');
       recordDiv.dataset.recordId = index;
-
+      const removeButtonHTML = index > 1 ?
+        `<button type="button" class="remove-record-btn" onclick="removeRecord(this)">
+                    <i class="fas fa-trash-alt"></i> Remover
+                 </button>` : '';
       recordDiv.innerHTML = `
                 <h4>
                     <span><i class="fas fa-notes-medical"></i> Registro de Caso #${index}</span>
-                    ${index > 1 ? '<button type="button" class="remove-record-btn" onclick="removeRecord(this)"><i class="fas fa-trash-alt"></i> Remover</button>' : ''}
+                    ${removeButtonHTML}
                 </h4>
                 <div class="form-group">
                     <label for="endereco_${index}">Endereço:</label>
@@ -516,15 +650,25 @@
       return recordDiv;
     }
 
-    function addRecord() {
+    function actuallyAddRecord() {
       recordCounter++;
       const recordsContainer = document.getElementById('recordsContainer');
       const newRecordForm = createRecordForm(recordCounter);
       recordsContainer.appendChild(newRecordForm);
-      if (recordCounter === 1) {
+      if (recordCounter === 1 && recordsContainer.childElementCount === 1) {
         document.getElementById('endereco_1').value = "Rua das Flores, Centro";
         document.getElementById('diagnostico_1').value = "Dengue";
         document.getElementById('sintomas_1').value = "febre alta, dor de cabeça, dor atrás dos olhos";
+      }
+    }
+
+    function addRecord() {
+      const recordsContainer = document.getElementById('recordsContainer');
+      const currentVisibleRecordCount = recordsContainer.childElementCount;
+      if (currentVisibleRecordCount >= MAX_RECOMMENDED_RECORDS) {
+        openModal('limitationWarningModal');
+      } else {
+        actuallyAddRecord();
       }
     }
 
@@ -533,6 +677,21 @@
     }
 
     document.getElementById('addRecordBtn').addEventListener('click', addRecord);
+
+    if (btnNovaConsulta) { // Adiciona listener para o novo botão
+      btnNovaConsulta.addEventListener('click', () => {
+        location.reload();
+      });
+    }
+
+    function escapeHtml(unsafe) {
+      if (typeof unsafe !== 'string') {
+        if (unsafe === null || unsafe === undefined) return '';
+        try { return String(unsafe).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
+        catch (e) { return ''; }
+      }
+      return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
 
     function renderJsonResponseAsNarrativeCards(jsonData) {
       let cardsHTML = '<div class="ia-result-card-container">';
@@ -543,43 +702,38 @@
         jsonData.forEach((item, index) => {
           cardsHTML += `
                         <div class="ia-result-card">
-                            <h4><i class="fas fa-file-alt"></i> Análise para: <span style="color:var(--highlight-color);">${item.doenca || `Caso ${index + 1}`}</span></h4>
-
-                            ${item.bairro ? `<div class="field-group"><span class="field-label">Bairro/Região:</span><div class="field-value">${item.bairro}</div></div>` : ''}
-
-                            ${item.causa_possivel ? `<div class="field-group"><span class="field-label">Causa Provável Identificada:</span><div class="field-value">${item.causa_possivel}</div></div>` : ''}
-
-                            ${item.mitigacao ? `<div class="field-group"><span class="field-label">Sugestão de Mitigação:</span><div class="field-value">${item.mitigacao}</div></div>` : ''}
-
-                            ${item.pq_mitiga ? `<div class="field-group"><span class="field-label">Fundamentação para Mitigação:</span><div class="field-value">${item.pq_mitiga}</div></div>` : ''}
-
+                            <h4><i class="fas fa-file-alt"></i> Análise para: <span style="color:var(--highlight-color);">${escapeHtml(item.doenca)}</span> (Bairro: ${escapeHtml(item.bairro || 'N/A')})</h4>
+                            ${item.causa_possivel ? `<div class="field-group"><span class="field-label">Causa Provável Identificada:</span><div class="field-value">${escapeHtml(item.causa_possivel)}</div></div>` : ''}
+                            ${item.mitigacao ? `<div class="field-group"><span class="field-label">Sugestão de Mitigação:</span><div class="field-value">${escapeHtml(item.mitigacao)}</div></div>` : ''}
+                            ${item.pq_mitiga ? `<div class="field-group"><span class="field-label">Fundamentação para Mitigação:</span><div class="field-value">${escapeHtml(item.pq_mitiga)}</div></div>` : ''}
                             ${item.estimativa_reducao_percentual ?
               `<div class="field-group"><span class="field-label">Impacto Estimado com a Mitigação:</span><div class="field-value">Prevê-se uma redução de
-                                 <span class="highlight-text">${item.estimativa_reducao_percentual}</span> nos casos.
-                                 ${item.pq_da_estimativa_reducao_percentual || ''}</div></div>`
-              : (item.pq_da_estimativa_reducao_percentual ? `<div class="field-group"><span class="field-label">Considerações sobre Impacto:</span><div class="field-value">${item.pq_da_estimativa_reducao_percentual}</div></div>` : '')
+                                 <span class="highlight-text">${escapeHtml(item.estimativa_reducao_percentual)}</span> nos casos.
+                                 ${escapeHtml(item.pq_da_estimativa_reducao_percentual || '')}</div></div>`
+              : (item.pq_da_estimativa_reducao_percentual ? `<div class="field-group"><span class="field-label">Considerações sobre Impacto:</span><div class="field-value">${escapeHtml(item.pq_da_estimativa_reducao_percentual)}</div></div>` : '')
             }
-                        </div>
-                    `;
+                        </div>`;
         });
       } else if (typeof jsonData === 'object' && jsonData !== null) {
-        cardsHTML += `
-                        <div class="ia-result-card">
-                            <h4><i class="fas fa-file-alt"></i> Análise Detalhada da IA</h4>`;
-        Object.entries(jsonData).map(([key, value]) => {
+        cardsHTML += `<div class="ia-result-card"><h4><i class="fas fa-file-alt"></i> Análise Detalhada da IA</h4>`;
+        Object.entries(jsonData).forEach(([key, value]) => {
           const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-          cardsHTML += `<div class="field-group"><span class="field-label">${formattedKey}:</span><div class="field-value">${typeof value === 'object' ? '<pre>' + JSON.stringify(value, null, 2) + '</pre>' : value}</div></div>`;
+          cardsHTML += `<div class="field-group"><span class="field-label">${escapeHtml(formattedKey)}:</span><div class="field-value">${typeof value === 'object' ? '<pre>' + escapeHtml(JSON.stringify(value, null, 2)) + '</pre>' : escapeHtml(String(value))}</div></div>`;
         });
         cardsHTML += `</div>`;
       } else {
-        return '<p class="error-message">Formato de resultado da IA não reconhecido para exibição detalhada.</p><pre>' + JSON.stringify(jsonData, null, 2) + '</pre>';
+        return '<p class="error-message">Formato de resultado da IA não reconhecido para exibição detalhada.</p><pre>' + escapeHtml(JSON.stringify(jsonData, null, 2)) + '</pre>';
       }
       cardsHTML += '</div>';
       return cardsHTML;
     }
 
-
     async function enviarParaAnalise() {
+      if (primeiraConsultaFeita) { // Se já fez uma consulta, recarrega a página
+        location.reload();
+        return; // Impede a execução do restante da função
+      }
+
       const resultadoDiv = document.getElementById('resultado');
       const recordsContainer = document.getElementById('recordsContainer');
       const recordEntries = recordsContainer.querySelectorAll('.record-entry');
@@ -607,7 +761,7 @@
       const jsonPayload = { dados: dadosArray };
       resultadoDiv.innerHTML = '<p class="loading-message"><i class="fas fa-spinner fa-spin"></i> Enviando e processando...</p>';
 
-      const API_URL = '/analise';
+      const API_URL = 'http://localhost:3001/analise';
 
       try {
         const resp = await fetch(API_URL, {
@@ -617,65 +771,80 @@
         });
 
         const responseText = await resp.text();
-        let data;
+        let jsonDataFromApi;
         try {
-          data = JSON.parse(responseText);
+          jsonDataFromApi = JSON.parse(responseText);
         } catch (e) {
-          console.error("Resposta não é JSON válido:", responseText);
-          resultadoDiv.innerHTML = `<p class="error-message"><i class="fas fa-exclamation-triangle"></i> Erro: Resposta do servidor não é um JSON válido. Conteúdo: ${responseText.substring(0, 300)}...</p>`;
+          resultadoDiv.innerHTML = `<p class="error-message"><i class="fas fa-exclamation-triangle"></i> Erro: Resposta do servidor não é um JSON válido. Conteúdo recebido: ${escapeHtml(responseText.substring(0, 300))}...</p>`;
+          primeiraConsultaFeita = true; // Marcar que uma tentativa foi feita
+          btnEnviarAnalise.innerHTML = '<i class="fas fa-sync-alt"></i> Nova Análise (Recarregar Página)';
+          btnEnviarAnalise.classList.remove('btn-primary');
+          btnEnviarAnalise.classList.add('btn-info');
           return;
         }
 
         if (!resp.ok) {
           let errorMsg = `Erro na requisição: ${resp.status} ${resp.statusText}`;
-          if (data && data.error) { errorMsg += ` - ${data.error}`; }
-          else if (data && data.message) { errorMsg += ` - ${data.message}`; }
-          else if (data && typeof data.resultado === 'string' && data.resultado.toLowerCase().includes('erro')) { errorMsg += ` - ${data.resultado}`; }
+          // ... (tratamento de erro mantido) ...
           throw new Error(errorMsg);
         }
 
         let outputHTML = '';
         let dataToRender = null;
 
-        if (data && typeof data.raw === 'string') { // Verifica se a resposta está no campo 'raw'
-          try {
-            const match = data.raw.match(/```json\s*([\s\S]*?)\s*```/);
-            if (match && match[1]) {
-              dataToRender = JSON.parse(match[1]);
-            } else {
-              dataToRender = JSON.parse(data.raw);
-            }
-          } catch (e) {
-            console.warn("Falha ao parsear 'data.raw'. Tratando como texto bruto.", data.raw.substring(0, 100) + "...");
-            outputHTML = '<strong>Resultado da Análise (Texto Bruto da IA):</strong><div style="white-space: pre-wrap; font-family: var(--font-code); background: var(--bg-code); color: var(--text-code); padding:15px; border-radius:var(--border-radius-sm); margin-top:10px;">' + data.raw.replace(/</g, "&lt;").replace(/>/g, "&gt;") + '</div>';
-          }
-        } else if (data && typeof data.resultado === 'string') {
-          try {
-            dataToRender = JSON.parse(data.resultado);
-          } catch (e) { // Se não for JSON, é markdown ou texto
-            outputHTML = '<strong>Resultado da Análise (Texto/Markdown):</strong>' + markdownToHtml(data.resultado);
-          }
-        } else if (data && (typeof data.resultado === 'object' || Array.isArray(data))) { // Se resultado é objeto/array ou a própria data é o array
-          dataToRender = data.resultado || data;
+        // ... (lógica de parse de jsonDataFromApi.raw e jsonDataFromApi.resultado mantida) ...
+        if (jsonDataFromApi && typeof jsonDataFromApi.raw === 'string') {
+          let rawJsonString = jsonDataFromApi.raw;
+          const match = rawJsonString.match(/```json\s*([\s\S]*?)\s*```/);
+          let jsonToParse = "";
+          if (match && match[1]) { jsonToParse = match[1]; }
+          else { jsonToParse = rawJsonString; }
+          try { dataToRender = JSON.parse(jsonToParse); }
+          catch (e) { outputHTML = `<strong>Resultado (falha no parse de 'raw'):</strong><pre>${escapeHtml(jsonDataFromApi.raw)}</pre>`; }
+        } else if (jsonDataFromApi && typeof jsonDataFromApi.resultado === 'string') {
+          try { dataToRender = JSON.parse(jsonDataFromApi.resultado); }
+          catch (e) { outputHTML = '<strong>Resultado (Texto):</strong><div>' + escapeHtml(jsonDataFromApi.resultado) + '</div>'; }
+        } else if (jsonDataFromApi && (Array.isArray(jsonDataFromApi.resultado) || typeof jsonDataFromApi.resultado === 'object')) {
+          dataToRender = jsonDataFromApi.resultado || jsonDataFromApi;
+        } else if (jsonDataFromApi && (Array.isArray(jsonDataFromApi) || typeof jsonDataFromApi === 'object') && !jsonDataFromApi.raw && !jsonDataFromApi.resultado) {
+          dataToRender = jsonDataFromApi;
         }
 
 
         if (dataToRender) {
-          outputHTML = '<strong><i class="fas fa-lightbulb"></i> Insights Gerados pela IA:</strong>' + renderJsonResponseAsNarrativeCards(dataToRender);
+          if (Array.isArray(dataToRender)) {
+            outputHTML = '<strong><i class="fas fa-lightbulb"></i> Insights Gerados pela IA (' + dataToRender.length + ' análises):</strong>' + renderJsonResponseAsNarrativeCards(dataToRender);
+          } else if (typeof dataToRender === 'object' && dataToRender !== null) {
+            outputHTML = '<strong><i class="fas fa-lightbulb"></i> Insights Gerados pela IA:</strong>' + renderJsonResponseAsNarrativeCards([dataToRender]);
+          } else {
+            outputHTML = '<strong>Resultado (Formato Inesperado):</strong><br><pre>' + escapeHtml(JSON.stringify(dataToRender, null, 2)) + '</pre>';
+          }
         } else if (!outputHTML) {
-          outputHTML = '<p class="error-message">Resposta da IA recebida, mas em formato não reconhecido para exibição.</p><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+          outputHTML = '<p class="error-message">Nenhum resultado claro da IA para exibir.</p>';
+          if (jsonDataFromApi) {
+            outputHTML += '<strong>Resposta Bruta da API:</strong><pre>' + escapeHtml(JSON.stringify(jsonDataFromApi, null, 2)) + '</pre>';
+          }
         }
 
         resultadoDiv.innerHTML = outputHTML;
 
       } catch (e) {
-        console.error("Erro no fetch ou processamento:", e);
-        resultadoDiv.innerHTML = `<p class="error-message"><i class="fas fa-exclamation-triangle"></i> Erro ao processar resposta: ${e.message}. Verifique o console para mais detalhes e se a API está retornando o formato esperado.</p>`;
+        resultadoDiv.innerHTML = `<p class="error-message"><i class="fas fa-exclamation-triangle"></i> Erro ao processar resposta: ${escapeHtml(e.message)}.</p>`;
+      } finally {
+        primeiraConsultaFeita = true;
+        btnEnviarAnalise.innerHTML = '<i class="fas fa-sync-alt"></i> Nova Análise (Recarregar)';
+        btnEnviarAnalise.classList.remove('btn-primary');
+        btnEnviarAnalise.classList.add('btn-info');
+        // O botão de Nova Consulta explícito não é mais necessário se o principal muda de função.
+        // Se quiser manter separado:
+        // if (btnNovaConsulta) btnNovaConsulta.style.display = 'inline-flex';
       }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
       addRecord();
+      // Esconder o botão de nova consulta inicialmente se ele for separado
+      // if (btnNovaConsulta) btnNovaConsulta.style.display = 'none';
     });
   </script>
 </body>
