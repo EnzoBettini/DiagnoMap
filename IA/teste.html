@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DiagnoMap - Teste Agente de IA</title>
+  <title>DiagnoMap - Teste Interativo do Agente de IA</title>
   <link
     href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@500;600;700&display=swap"
     rel="stylesheet">
@@ -29,8 +29,8 @@
       --bg-light: #FFFFFF;
       --bg-base: #f0f4f8;
       --bg-surface: #FFFFFF;
-      --bg-code: #282c34;
-      /* Fundo escuro para blocos de código */
+      --bg-code: #1e293b;
+      --text-code: #e2e8f0;
 
       --border-color: #e5e7eb;
       --border-radius-sm: 6px;
@@ -43,9 +43,10 @@
 
       --font-primary: 'Roboto', sans-serif;
       --font-secondary: 'Montserrat', sans-serif;
-      --font-code: 'Consolas', 'Monaco', ' Liberation Mono', monospace;
+      --font-code: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
     }
 
+    /* Reset e Base */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -55,6 +56,7 @@
     html {
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+      height: 100%;
     }
 
     body {
@@ -67,99 +69,220 @@
       align-items: center;
       padding: 30px;
       min-height: 100vh;
+      line-height: 1.65;
+      /* Melhor legibilidade geral */
     }
 
+    /* Container Principal da Página de Teste */
     .test-container {
       background-color: var(--bg-surface);
-      padding: 30px 40px;
+      padding: 35px 40px;
       border-radius: var(--border-radius-lg);
-      box-shadow: var(--shadow-md);
+      box-shadow: var(--shadow-lg);
       width: 100%;
-      max-width: 800px;
+      max-width: 900px;
+      border-top: 5px solid var(--primary-color);
     }
 
-    .test-container h2 {
+    /* Cabeçalho da Página de Teste (Logo e Título) */
+    .logo-text-group-page h1 {
       font-family: var(--font-secondary);
+      font-size: 1.6em;
+      /* Ajustado */
+      line-height: 1.2;
       color: var(--primary-color);
-      font-size: 1.8em;
-      font-weight: 600;
       margin-bottom: 25px;
+      /* Reduzido */
       text-align: center;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
+    }
+
+    .logo-text-group-page .logo-icon {
+      /* Ícone de coração no topo */
+      font-size: 1.2em;
+      /* Relativo ao h1 */
+      color: var(--highlight-color);
+      margin-right: 10px;
+    }
+
+    .logo-text-group-page .logo-diagno {
+      color: var(--text-dark);
+      font-weight: 500;
+    }
+
+    .logo-text-group-page .logo-map {
+      color: var(--highlight-color);
+      font-weight: 700;
+    }
+
+    .test-container h2 {
+      /* Título dentro do container de teste */
+      font-family: var(--font-secondary);
+      color: var(--primary-color);
+      font-size: 1.9em;
+      /* Aumentado */
+      font-weight: 600;
+      margin-bottom: 30px;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
     }
 
     .test-container h2 .logo-icon {
-      font-size: 1.2em;
+      /* Ícone de engrenagem */
+      font-size: 1em;
+      /* Relativo ao h2 */
       color: var(--highlight-color);
+      opacity: 0.8;
     }
 
+    /* Grupos de Formulário e Inputs */
+    .form-group {
+      margin-bottom: 18px;
+    }
 
-    label {
+    .form-group label {
       font-weight: 500;
-      font-size: 0.95em;
+      font-size: 0.9em;
       color: var(--secondary-color);
       display: block;
       margin-bottom: 8px;
     }
 
-    textarea#jsonInput {
-      /* Target específico para o textarea de input */
+    .form-group input[type="text"],
+    .form-group textarea {
       width: 100%;
-      height: 180px;
-      font-size: 0.95em;
-      padding: 12px;
+      font-size: 0.98em;
+      /* Levemente aumentado */
+      padding: 12px 15px;
       border-radius: var(--border-radius-sm);
       border: 1px solid var(--border-color);
-      font-family: var(--font-code);
-      line-height: 1.5;
-      margin-bottom: 15px;
-      background-color: #fdfdfe;
+      background-color: var(--bg-base);
       color: var(--text-dark);
-      /* Cor do texto dentro do textarea */
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
-    textarea#jsonInput:focus {
+    .form-group input[type="text"]:focus,
+    .form-group textarea:focus {
       outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(7, 89, 133, 0.15);
+      border-color: var(--highlight-color);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
     }
 
-    .actions-container {
+    /* Textarea para o JSON de entrada, se fosse usado (mantido para referência) */
+    textarea#jsonInput {
+      height: 180px;
+      font-family: var(--font-code);
+      line-height: 1.6;
+    }
+
+    .form-group textarea {
+      /* Para sintomas, se fosse textarea */
+      min-height: 60px;
+      font-family: var(--font-primary);
+      line-height: 1.5;
+    }
+
+    /* Container e Entradas de Registro de Caso */
+    #recordsContainer .record-entry {
+      background-color: #fdfdff;
+      padding: 20px 25px;
+      border-radius: var(--border-radius-md);
+      margin-bottom: 25px;
+      border: 1px solid #e0e7ff;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+    }
+
+    #recordsContainer .record-entry h4 {
+      font-family: var(--font-secondary);
+      color: var(--primary-color);
+      font-size: 1.15em;
+      margin: 0 0 20px 0;
+      /* Ajuste da margem inferior */
+      padding-bottom: 12px;
+      /* Aumentado */
+      border-bottom: 1px dashed var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    #recordsContainer .record-entry h4 .fas {
+      margin-right: 8px;
+      color: var(--primary-color);
+      opacity: 0.7;
+    }
+
+    .remove-record-btn {
+      background-color: transparent;
+      color: var(--danger-color);
+      border: none;
+      padding: 6px 10px;
+      font-size: 0.9em;
+      cursor: pointer;
+      border-radius: var(--border-radius-sm);
+      transition: background-color 0.2s ease;
+    }
+
+    .remove-record-btn:hover {
+      background-color: rgba(239, 68, 68, 0.1);
+    }
+
+    /* Container de Ações Principais (Botões) */
+    .main-actions-container {
+      margin-top: 25px;
+      /* Aumentado */
       display: flex;
       gap: 15px;
       align-items: center;
-      margin-bottom: 15px;
       flex-wrap: wrap;
-      /* Para botões quebrarem em telas menores */
+      border-top: 1px solid var(--border-color);
+      padding-top: 25px;
+      /* Aumentado */
+      justify-content: flex-end;
     }
 
+    #addRecordBtn {
+      margin-bottom: 25px;
+      display: flex;
+      justify-content: flex-start;
+      /* Botão de adicionar à esquerda */
+    }
+
+    /* Estilo Unificado para Botões */
     button.btn,
     a.btn {
       padding: 12px 25px;
-      font-size: 1em;
+      font-size: 0.95em;
       font-weight: 500;
       border-radius: var(--border-radius-md);
       cursor: pointer;
-      transition: filter 0.2s ease, transform 0.15s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+      transition: all 0.2s ease-out;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
+      /* Aumentado gap do ícone */
       text-decoration: none;
       justify-content: center;
       border: none;
+      box-shadow: var(--shadow-sm);
     }
 
     button.btn:hover,
     a.btn:hover {
-      filter: brightness(110%);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
     }
 
     button.btn:active,
     a.btn:active {
-      transform: translateY(1px);
+      transform: translateY(0px);
+      box-shadow: var(--shadow-xs);
     }
 
     .btn-primary {
@@ -183,84 +306,139 @@
       color: white;
     }
 
+    .btn-success {
+      background-color: var(--success-color);
+      color: white;
+    }
+
+    .btn-success:hover {
+      background-color: #1dbf53;
+    }
+
+    /* Área de Resultado da Análise */
     #resultado {
       margin-top: 30px;
-      background: var(--bg-light);
-      /* Fundo um pouco diferente para resultado */
-      padding: 25px;
-      border-radius: var(--border-radius-md);
-      border: 1px solid var(--border-color);
-      min-height: 100px;
-      font-size: 0.95em;
-      line-height: 1.7;
-      box-shadow: var(--shadow-sm);
+      background: transparent;
+      padding: 0;
+      border: none;
+      min-height: 50px;
+      box-shadow: none;
     }
 
-    #resultado strong {
-      color: var(--primary-color);
+    #resultado>strong {
+      display: block;
       font-family: var(--font-secondary);
-      font-weight: 600;
+      font-size: 1.4em;
+      color: var(--primary-color);
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--highlight-color);
+      text-align: center;
     }
 
-    #resultado em {
-      font-style: italic;
-      color: var(--text-muted)
-    }
-
-    #resultado ul {
-      list-style-type: disc;
-      margin-left: 25px;
-      margin-top: 10px;
-      margin-bottom: 10px;
-      padding-left: 0;
-    }
-
-    #resultado li {
-      margin-bottom: 6px;
+    #resultado .error-message,
+    #resultado .loading-message,
+    #resultado .no-results-message {
+      padding: 20px;
+      background-color: var(--bg-surface);
+      border-radius: var(--border-radius-md);
+      text-align: center;
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
     }
 
     #resultado .error-message {
       color: var(--danger-color);
-      font-weight: bold;
+      background-color: rgba(239, 68, 68, 0.05);
+      border-color: rgba(239, 68, 68, 0.3);
     }
 
-    #resultado .loading-message {
-      color: var(--text-muted);
-      font-style: italic;
+    .ia-result-card-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 25px;
     }
 
-    /* Estilo para JSON formatado em <pre> */
+    .ia-result-card {
+      background-color: var(--bg-surface);
+      border-radius: var(--border-radius-md);
+      padding: 25px 30px;
+      box-shadow: var(--shadow-md);
+      border-left: 6px solid var(--highlight-color);
+      transition: box-shadow 0.3s ease;
+    }
+
+    .ia-result-card:hover {
+      box-shadow: var(--shadow-lg);
+    }
+
+    .ia-result-card h4 {
+      font-family: var(--font-secondary);
+      color: var(--primary-color);
+      font-size: 1.25em;
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ia-result-card h4 .fas {
+      color: var(--highlight-color);
+      font-size: 0.9em;
+    }
+
+    .ia-result-card .field-group {
+      margin-bottom: 15px;
+      /* Aumentado espaçamento */
+    }
+
+    .ia-result-card .field-label {
+      font-weight: 600;
+      /* Rótulo mais forte */
+      color: var(--secondary-color);
+      display: block;
+      font-size: 0.92em;
+      /* Ajustado */
+      margin-bottom: 5px;
+      /* Espaçamento entre rótulo e valor */
+    }
+
+    .ia-result-card .field-value {
+      line-height: 1.65;
+      /* Melhorado */
+      font-size: 0.95em;
+      /* Ajustado */
+      color: var(--text-dark);
+      padding-left: 10px;
+      /* Indentação do valor */
+      border-left: 2px solid var(--border-color);
+      /* Linha sutil para separar valor */
+    }
+
+    .ia-result-card .highlight-text {
+      color: var(--accent-color);
+      font-weight: 600;
+      background-color: rgba(245, 158, 11, 0.08);
+      padding: 2px 6px;
+      border-radius: var(--border-radius-sm);
+    }
+
     #resultado pre {
+      /* Fallback para JSON bruto */
       background-color: var(--bg-code);
-      color: #abb2bf;
-      /* Light text for dark background */
+      color: var(--text-code);
       padding: 20px;
       border-radius: var(--border-radius-sm);
       overflow-x: auto;
       font-family: var(--font-code);
-      font-size: 0.9em;
-      line-height: 1.6;
-      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-      margin-top: 10px;
-    }
-
-    .logo-text-group-page h1 {
-      font-family: var(--font-secondary);
-      font-size: 1.5em;
-      line-height: 1.1;
-      color: var(--primary-color);
-      margin-bottom: 30px;
-      text-align: center;
-    }
-
-    .logo-text-group-page .logo-diagno {
-      color: var(--text-dark);
-      font-weight: 500;
-    }
-
-    .logo-text-group-page .logo-map {
-      color: var(--highlight-color);
-      font-weight: 700;
+      font-size: 0.95em;
+      line-height: 1.65;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+      margin-top: 15px;
+      border: 1px solid #4a5568;
     }
 
     .page-footer {
@@ -268,12 +446,6 @@
       text-align: center;
       font-size: 0.85em;
       color: var(--text-muted);
-    }
-
-    .button-container {
-      display: flex;
-      gap: 15px;
-      justify-content: center;
     }
   </style>
 </head>
@@ -287,23 +459,26 @@
   </div>
 
   <div class="test-container">
-    <h2><i class="fas fa-cogs logo-icon"></i> Testar Agente de IA (/analise)</h2>
-    <label for="jsonInput">Cole aqui o JSON para enviar:</label>
-    <textarea id="jsonInput">{
-    "dados": [
-        { "endereco": "Rua das Flores, Centro", "diagnostico": "Dengue", "sintomas": "febre alta, dor de cabeça, dor atrás dos olhos" },
-        { "endereco": "Avenida Brasil, Bairro Novo", "diagnostico": "Gripe", "sintomas": "tosse, febre, dor no corpo" }
-    ]
-}</textarea>
-    <div class="actions-container button-container">
-      <button class="btn btn-primary" onclick="enviar()"><i class="fas fa-paper-plane"></i> Enviar para
-        /analise</button>
+    <h2><i class="fas fa-cogs logo-icon"></i> Teste Interativo do Agente de IA</h2>
+
+    <div id="recordsContainer">
+    </div>
+
+    <button class="btn btn-success" id="addRecordBtn" type="button">
+      <i class="fas fa-plus"></i> Adicionar Novo Registro de Caso
+    </button>
+
+    <div class="main-actions-container">
+      <a href="../index.html" class="btn btn-secondary-outline"><i class="fas fa-solid fa-rotate-left"></i> Voltar à
+        Página Inicial</a>
       <a href="utilizar.html" class="btn btn-secondary-outline"><i class="fas fa-question-circle"></i> Como utilizar</a>
-      <a href="../index.html" class="btn btn-secondary-outline"><i class="fas fa-solid fa-rotate-left"></i> Voltar</a>
+      <button class="btn btn-primary" onclick="enviarParaAnalise()" style="margin-left: auto;"><i
+          class="fas fa-paper-plane"></i> Enviar Dados para Análise</button>
     </div>
 
     <div id="resultado">
-      <p>Aguardando envio para análise...</p>
+      <p class="loading-message">Adicione registros e clique em "Enviar Dados para Análise" para visualizar os
+        resultados da IA aqui.</p>
     </div>
   </div>
 
@@ -311,89 +486,197 @@
     <p>&copy; 2025 DiagnoMap - Demonstração da API de Análise</p>
   </footer>
 
-    <script>
-      function markdownToHtml(text) {
-        if (typeof text !== 'string') return '';
+  <script>
+    let recordCounter = 0;
 
-        text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    function createRecordForm(index) {
+      const recordDiv = document.createElement('div');
+      recordDiv.classList.add('record-entry');
+      recordDiv.dataset.recordId = index;
 
-        text = text.replace(/^\s*[\-\*]\s+(.+)/gm, '<li>$1</li>');
-        text = text.replace(/(<li>.*?<\/li>\s*)+/gs, (match) => `<ul>${match.trim().replace(/\s*$/, '')}</ul>`);
-        text = text.replace(/<br>\s*<ul>/g, '<ul>').replace(/<\/ul>\s*<br>/g, '</ul>');
+      recordDiv.innerHTML = `
+                <h4>
+                    <span><i class="fas fa-notes-medical"></i> Registro de Caso #${index}</span>
+                    ${index > 1 ? '<button type="button" class="remove-record-btn" onclick="removeRecord(this)"><i class="fas fa-trash-alt"></i> Remover</button>' : ''}
+                </h4>
+                <div class="form-group">
+                    <label for="endereco_${index}">Endereço:</label>
+                    <input type="text" name="endereco" id="endereco_${index}" placeholder="Ex: Rua das Flores, Centro">
+                </div>
+                <div class="form-group">
+                    <label for="diagnostico_${index}">Diagnóstico:</label>
+                    <input type="text" name="diagnostico" id="diagnostico_${index}" placeholder="Ex: Dengue, Gripe">
+                </div>
+                <div class="form-group">
+                    <label for="sintomas_${index}">Sintomas (separados por vírgula):</label>
+                    <input type="text" name="sintomas" id="sintomas_${index}" placeholder="Ex: febre alta, dor de cabeça, dor atrás dos olhos">
+                </div>
+            `;
+      return recordDiv;
+    }
 
-        let paragraphs = text.split(/\n\s*\n/);
-        text = paragraphs.map(p => {
-          if (p.startsWith('<ul>') && p.endsWith('</ul>')) return p;
-          if (p.match(/<\w+.*?>.*?<\/\w+>/s) && !p.includes('\n')) return p;
-          return `<p>${p.replace(/\n/g, '<br>')}</p>`;
-        }).join('');
+    function addRecord() {
+      recordCounter++;
+      const recordsContainer = document.getElementById('recordsContainer');
+      const newRecordForm = createRecordForm(recordCounter);
+      recordsContainer.appendChild(newRecordForm);
+      if (recordCounter === 1) {
+        document.getElementById('endereco_1').value = "Rua das Flores, Centro";
+        document.getElementById('diagnostico_1').value = "Dengue";
+        document.getElementById('sintomas_1').value = "febre alta, dor de cabeça, dor atrás dos olhos";
+      }
+    }
 
-        text = text.replace(/<p><br\s*\/?>\s*<\/p>/g, '').replace(/<p>\s*<\/p>/g, '');
-        text = text.replace(/<p>(<ul>.*?<\/ul>)<\/p>/gs, '$1');
-        text = text.replace(/<p>(<pre><code>.*?<\/code><\/pre>)<\/p>/gs, '$1');
+    function removeRecord(buttonElement) {
+      buttonElement.closest('.record-entry').remove();
+    }
 
-        return text;
+    document.getElementById('addRecordBtn').addEventListener('click', addRecord);
+
+    function renderJsonResponseAsNarrativeCards(jsonData) {
+      let cardsHTML = '<div class="ia-result-card-container">';
+      if (Array.isArray(jsonData)) {
+        if (jsonData.length === 0) {
+          return '<p class="no-results-message"><i class="fas fa-info-circle"></i> A IA retornou uma lista vazia de análises.</p>';
+        }
+        jsonData.forEach((item, index) => {
+          cardsHTML += `
+                        <div class="ia-result-card">
+                            <h4><i class="fas fa-file-alt"></i> Análise para: <span style="color:var(--highlight-color);">${item.doenca || `Caso ${index + 1}`}</span></h4>
+
+                            ${item.bairro ? `<div class="field-group"><span class="field-label">Bairro/Região:</span><div class="field-value">${item.bairro}</div></div>` : ''}
+
+                            ${item.causa_possivel ? `<div class="field-group"><span class="field-label">Causa Provável Identificada:</span><div class="field-value">${item.causa_possivel}</div></div>` : ''}
+
+                            ${item.mitigacao ? `<div class="field-group"><span class="field-label">Sugestão de Mitigação:</span><div class="field-value">${item.mitigacao}</div></div>` : ''}
+
+                            ${item.pq_mitiga ? `<div class="field-group"><span class="field-label">Fundamentação para Mitigação:</span><div class="field-value">${item.pq_mitiga}</div></div>` : ''}
+
+                            ${item.estimativa_reducao_percentual ?
+              `<div class="field-group"><span class="field-label">Impacto Estimado com a Mitigação:</span><div class="field-value">Prevê-se uma redução de
+                                 <span class="highlight-text">${item.estimativa_reducao_percentual}</span> nos casos.
+                                 ${item.pq_da_estimativa_reducao_percentual || ''}</div></div>`
+              : (item.pq_da_estimativa_reducao_percentual ? `<div class="field-group"><span class="field-label">Considerações sobre Impacto:</span><div class="field-value">${item.pq_da_estimativa_reducao_percentual}</div></div>` : '')
+            }
+                        </div>
+                    `;
+        });
+      } else if (typeof jsonData === 'object' && jsonData !== null) {
+        cardsHTML += `
+                        <div class="ia-result-card">
+                            <h4><i class="fas fa-file-alt"></i> Análise Detalhada da IA</h4>`;
+        Object.entries(jsonData).map(([key, value]) => {
+          const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+          cardsHTML += `<div class="field-group"><span class="field-label">${formattedKey}:</span><div class="field-value">${typeof value === 'object' ? '<pre>' + JSON.stringify(value, null, 2) + '</pre>' : value}</div></div>`;
+        });
+        cardsHTML += `</div>`;
+      } else {
+        return '<p class="error-message">Formato de resultado da IA não reconhecido para exibição detalhada.</p><pre>' + JSON.stringify(jsonData, null, 2) + '</pre>';
+      }
+      cardsHTML += '</div>';
+      return cardsHTML;
+    }
+
+
+    async function enviarParaAnalise() {
+      const resultadoDiv = document.getElementById('resultado');
+      const recordsContainer = document.getElementById('recordsContainer');
+      const recordEntries = recordsContainer.querySelectorAll('.record-entry');
+      const dadosArray = [];
+
+      recordEntries.forEach(entry => {
+        const endereco = entry.querySelector('input[name="endereco"]').value;
+        const diagnostico = entry.querySelector('input[name="diagnostico"]').value;
+        const sintomas = entry.querySelector('input[name="sintomas"]').value;
+
+        if (endereco.trim() || diagnostico.trim() || sintomas.trim()) {
+          dadosArray.push({
+            endereco: endereco.trim(),
+            diagnostico: diagnostico.trim(),
+            sintomas: sintomas.trim()
+          });
+        }
+      });
+
+      if (dadosArray.length === 0) {
+        resultadoDiv.innerHTML = '<p class="error-message"><i class="fas fa-exclamation-circle"></i> Adicione pelo menos um registro de caso com dados.</p>';
+        return;
       }
 
-      async function enviar() {
-        const input = document.getElementById('jsonInput').value;
-        const resultadoDiv = document.getElementById('resultado');
-        let jsonPayload;
+      const jsonPayload = { dados: dadosArray };
+      resultadoDiv.innerHTML = '<p class="loading-message"><i class="fas fa-spinner fa-spin"></i> Enviando e processando...</p>';
 
+      const API_URL = 'http://localhost:3001/analise';
+
+      try {
+        const resp = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(jsonPayload)
+        });
+
+        const responseText = await resp.text();
+        let data;
         try {
-          jsonPayload = JSON.parse(input);
+          data = JSON.parse(responseText);
         } catch (e) {
-          resultadoDiv.innerHTML = '<p class="error-message">JSON de entrada inválido!</p>';
+          console.error("Resposta não é JSON válido:", responseText);
+          resultadoDiv.innerHTML = `<p class="error-message"><i class="fas fa-exclamation-triangle"></i> Erro: Resposta do servidor não é um JSON válido. Conteúdo: ${responseText.substring(0, 300)}...</p>`;
           return;
         }
 
-        resultadoDiv.innerHTML = '<p class="loading-message"><i class="fas fa-spinner fa-spin"></i> Enviando e processando...</p>';
-
-        const API_URL = window.location.origin + '/analise';
-
-        try {
-          const resp = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(jsonPayload)
-          });
-
-          if (!resp.ok) {
-            let errorMsg = `Erro na requisição: ${resp.status} ${resp.statusText}`;
-            try {
-              const errorData = await resp.json();
-              if (errorData && errorData.error) errorMsg += ` - ${errorData.error}`;
-              else if (errorData && errorData.message) errorMsg += ` - ${errorData.message}`;
-            } catch (e) { }
-            throw new Error(errorMsg);
-          }
-
-          const data = await resp.json();
-          let outputHTML = '';
-
-          if (data && typeof data.resultado === 'string') {
-            try {
-              const parsedResultado = JSON.parse(data.resultado);
-              outputHTML = '<strong>Resultado da Análise (JSON):</strong><br><pre>' + JSON.stringify(parsedResultado, null, 2) + '</pre>';
-            } catch (e) {
-              outputHTML = '<strong>Resultado da Análise (Markdown):</strong>' + markdownToHtml(data.resultado);
-            }
-          } else if (data && typeof data.resultado === 'object') {
-            outputHTML = '<strong>Resultado da Análise (JSON):</strong><br><pre>' + JSON.stringify(data.resultado, null, 2) + '</pre>';
-          } else if (data) {
-            outputHTML = '<strong>Resposta Completa Recebida (Estrutura):</strong><br><pre>' + JSON.stringify(data, null, 2) + '</pre>';
-          } else {
-            outputHTML = '<p class="error-message">Resposta da IA vazia ou em formato não reconhecido.</p>';
-          }
-          resultadoDiv.innerHTML = outputHTML;
-
-        } catch (e) {
-          console.error("Erro no fetch:", e);
-          resultadoDiv.innerHTML = `<p class="error-message">Erro ao enviar requisição: ${e.message}. Verifique se a API está acessível.</p>`;
+        if (!resp.ok) {
+          let errorMsg = `Erro na requisição: ${resp.status} ${resp.statusText}`;
+          if (data && data.error) { errorMsg += ` - ${data.error}`; }
+          else if (data && data.message) { errorMsg += ` - ${data.message}`; }
+          else if (data && typeof data.resultado === 'string' && data.resultado.toLowerCase().includes('erro')) { errorMsg += ` - ${data.resultado}`; }
+          throw new Error(errorMsg);
         }
+
+        let outputHTML = '';
+        let dataToRender = null;
+
+        if (data && typeof data.raw === 'string') { // Verifica se a resposta está no campo 'raw'
+          try {
+            const match = data.raw.match(/```json\s*([\s\S]*?)\s*```/);
+            if (match && match[1]) {
+              dataToRender = JSON.parse(match[1]);
+            } else {
+              dataToRender = JSON.parse(data.raw);
+            }
+          } catch (e) {
+            console.warn("Falha ao parsear 'data.raw'. Tratando como texto bruto.", data.raw.substring(0, 100) + "...");
+            outputHTML = '<strong>Resultado da Análise (Texto Bruto da IA):</strong><div style="white-space: pre-wrap; font-family: var(--font-code); background: var(--bg-code); color: var(--text-code); padding:15px; border-radius:var(--border-radius-sm); margin-top:10px;">' + data.raw.replace(/</g, "&lt;").replace(/>/g, "&gt;") + '</div>';
+          }
+        } else if (data && typeof data.resultado === 'string') {
+          try {
+            dataToRender = JSON.parse(data.resultado);
+          } catch (e) { // Se não for JSON, é markdown ou texto
+            outputHTML = '<strong>Resultado da Análise (Texto/Markdown):</strong>' + markdownToHtml(data.resultado);
+          }
+        } else if (data && (typeof data.resultado === 'object' || Array.isArray(data))) { // Se resultado é objeto/array ou a própria data é o array
+          dataToRender = data.resultado || data;
+        }
+
+
+        if (dataToRender) {
+          outputHTML = '<strong><i class="fas fa-lightbulb"></i> Insights Gerados pela IA:</strong>' + renderJsonResponseAsNarrativeCards(dataToRender);
+        } else if (!outputHTML) {
+          outputHTML = '<p class="error-message">Resposta da IA recebida, mas em formato não reconhecido para exibição.</p><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+        }
+
+        resultadoDiv.innerHTML = outputHTML;
+
+      } catch (e) {
+        console.error("Erro no fetch ou processamento:", e);
+        resultadoDiv.innerHTML = `<p class="error-message"><i class="fas fa-exclamation-triangle"></i> Erro ao processar resposta: ${e.message}. Verifique o console para mais detalhes e se a API está retornando o formato esperado.</p>`;
       }
-    </script>
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      addRecord();
+    });
+  </script>
 </body>
 
 </html>
