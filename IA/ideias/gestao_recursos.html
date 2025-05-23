@@ -691,6 +691,10 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        .line-contents{
+            margin-top: 20px;
+        }
     </style>
 </head>
 
@@ -769,7 +773,7 @@
                 </div>
             </section>
 
-            <section class="filters-bar">
+            <section class="filters-bar line-contents">
                 <div class="filter-group">
                     <label for="filterTipoProfissional">Tipo de Profissional:</label>
                     <select id="filterTipoProfissional">
@@ -800,8 +804,11 @@
                         <option value="hospital_municipal">Hospital Municipal</option>
                     </select>
                 </div>
-                <button class="btn btn-primary" id="applyRHFiltersBtn"><i class="fas fa-filter"></i> Aplicar
+                <div class="line-contents">
+                    <button class="btn btn-primary" id="applyRHFiltersBtn"><i class="fas fa-filter "></i> Aplicar
                     Filtros</button>
+                </div>
+
             </section>
 
             <section class="content-grid-thirds">
