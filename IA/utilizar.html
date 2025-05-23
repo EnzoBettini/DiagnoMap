@@ -29,7 +29,8 @@
             --bg-light: #FFFFFF;
             --bg-base: #f0f4f8;
             --bg-surface: #FFFFFF;
-            --bg-code: #282c34;
+            --bg-code: #1e293b;
+            --text-code: #e2e8f0;
 
             --border-color: #e5e7eb;
             --border-radius-sm: 6px;
@@ -42,7 +43,7 @@
 
             --font-primary: 'Roboto', sans-serif;
             --font-secondary: 'Montserrat', sans-serif;
-            --font-code: 'Consolas', 'Monaco', ' Liberation Mono', monospace;
+            --font-code: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
         }
 
         * {
@@ -122,6 +123,30 @@
             font-weight: 400;
         }
 
+        .notice-box {
+            background-color: rgba(240, 244, 248, 0.7);
+            border: 1px solid var(--border-color);
+            border-left: 5px solid var(--info-color);
+            padding: 15px 20px;
+            border-radius: var(--border-radius-md);
+            margin: 20px 0 30px 0;
+            font-size: 0.95em;
+        }
+
+        .notice-box p {
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .notice-box strong {
+            color: var(--primary-color);
+        }
+
+        .notice-box i {
+            margin-right: 10px;
+            color: var(--info-color);
+        }
+
 
         .doc-section {
             margin-bottom: 30px;
@@ -142,8 +167,8 @@
             color: var(--secondary-color);
             font-size: 1.3em;
             font-weight: 500;
-            margin-top: 20px;
-            margin-bottom: 10px;
+            margin-top: 25px;
+            margin-bottom: 12px;
         }
 
         .doc-section p,
@@ -170,24 +195,27 @@
 
         pre {
             background-color: var(--bg-code);
-            color: #abb2bf;
+            color: var(--text-code);
             padding: 20px;
             border-radius: var(--border-radius-sm);
             overflow-x: auto;
             font-family: var(--font-code);
             font-size: 0.9em;
             line-height: 1.5;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
             margin: 15px 0;
+            border: 1px solid #334155;
         }
 
         code {
             font-family: var(--font-code);
-            background-color: rgba(27, 31, 35, .07);
-            padding: .2em .4em;
-            margin: 0;
-            font-size: 85%;
-            border-radius: 3px;
+            background-color: rgba(52, 73, 94, 0.1);
+            color: var(--secondary-color);
+            padding: .2em .5em;
+            margin: 0 .2em;
+            font-size: 90%;
+            border-radius: var(--border-radius-sm);
+            border: 1px solid rgba(52, 73, 94, 0.2);
         }
 
         pre code {
@@ -196,6 +224,8 @@
             margin: 0;
             font-size: inherit;
             border-radius: 0;
+            border: none;
+            color: inherit;
         }
 
         .page-footer {
@@ -205,13 +235,11 @@
             color: var(--text-muted);
         }
 
-        /* Estilo para o botão de retorno */
         .actions-bar {
             margin-top: 30px;
             padding-top: 20px;
             border-top: 1px solid var(--border-color);
             text-align: center;
-            /* Centralizar o botão */
         }
 
         .btn {
@@ -279,189 +307,150 @@
                 <span class="logo-diagno">Diagno</span><span class="logo-map">Map</span>
             </div>
             <h1>Agente de IA - Saúde</h1>
-            <p class="subtitle">Documentação para o backend de análise de dados de saúde.</p>
+            <p class="subtitle">Documentação para o backend de análise de dados de saúde e como usar a interface de
+                teste.</p>
         </header>
 
+        <div class="notice-box">
+            <p><i class="fas fa-info-circle"></i><strong>Nota Importante sobre o Protótipo DiagnoMap:</strong> O sistema
+                principal do DiagnoMap, acessível através do link "Explorar Protótipo" na página inicial, é um
+                <strong>modelo estático (mockup)</strong>. Ele serve para demonstrar a interface e o fluxo das
+                funcionalidades. As interações com dados e a lógica de IA são simuladas nessa área. Apenas a página de
+                "Teste Interativo da IA" (vinculada ao botão "Acessar Demonstração") se conecta a este backend de IA
+                para processamento real (quando o backend estiver rodando e configurado corretamente).</p>
+        </div>
+
         <section class="doc-section">
-            <h2>Como Rodar</h2>
-            <p>Siga os passos abaixo para configurar e iniciar o servidor do Agente de IA:</p>
+            <h2>Como Rodar o Agente de IA (Backend)</h2>
+            <p>Siga os passos abaixo para configurar e iniciar o servidor do Agente de IA localmente.</p>
+
+            <h3>Para Ambiente Local (Desenvolvimento/Teste):</h3>
             <ol>
                 <li>
-                    <strong>Instale as dependências:</strong>
-                    <pre><code>npm install</code></pre>
+                    <strong>Pré-requisitos:</strong>
+                    <ul>
+                        <li>Node.js e NPM (ou Yarn) instalados.</li>
+                        <li>Uma chave de API válida da OpenAI (ou do provedor de LLM que seu backend utiliza).</li>
+                    </ul>
                 </li>
                 <li>
-                    <strong>Inicie o servidor:</strong>
+                    <strong>Configure sua Chave da API:</strong>
+                    <p>O backend precisará da sua chave de API para se comunicar com o modelo de linguagem. Configure-a
+                        como uma variável de ambiente no seu backend Node.js (geralmente em um arquivo
+                        <code>.env</code>, por exemplo: <code>OPENAI_API_KEY=sua_chave_aqui</code>). Consulte a
+                        documentação específica do seu código backend para o nome exato da variável e como configurá-la.
+                    </p>
+                </li>
+                <li>
+                    <strong>Instale as dependências do backend:</strong>
+                    <p>Navegue até o diretório do seu backend no terminal e execute:</p>
+                    <pre><code>npm install</code></pre>
+                    <p>Ou, se estiver usando Yarn:</p>
+                    <pre><code>yarn install</code></pre>
+                </li>
+                <li>
+                    <strong>Inicie o servidor do backend:</strong>
                     <pre><code>npm start</code></pre>
+                    <p>Ou, se estiver usando Yarn:</p>
+                    <pre><code>yarn start</code></pre>
                 </li>
             </ol>
-            <p>Após iniciar, o servidor estará disponível em: <strong>http://localhost:3001</strong></p>
+            <p>Após iniciar, o servidor do Agente de IA estará disponível (por padrão) em:
+                <strong>http://localhost:3001</strong>. Você poderá testá-lo usando a página <a href="IA/teste.html"
+                    title="Acessar a página de teste interativo da IA">Teste Interativo da IA</a>.</p>
+
+            <h3>Para Ambiente Web (se o backend estiver deployado):</h3>
+            <p>Se o backend da IA estiver hospedado em um servidor web (por exemplo, para uma demonstração online do
+                sistema completo):</p>
+            <ul>
+                <li>A página de <a href="teste.html" title="Acessar a página de teste interativo da IA">Teste
+                        Interativo da IA</a> já deverá estar configurada para usar o endpoint correto da API deployada.
+                </li>
+                <li>Nesse caso, você não precisa rodar o backend localmente para usar a interface de teste online.</li>
+            </ul>
         </section>
 
         <section class="doc-section">
-            <h2>Endpoint de Análise</h2>
-            <p>O agente expõe um endpoint principal para processar os dados de saúde:</p>
-            <h3><code>POST /analise</code></h3>
+            <h2>Utilizando a Interface de Teste da IA</h2>
+            <p>A página <a href="teste.html" title="Acessar a página de teste interativo da IA">Teste Interativo da
+                    IA</a> permite que você envie dados de casos de saúde para o Agente de IA e visualize a análise
+                retornada.</p>
+            <ol>
+                <li>
+                    <strong>Adicionar Registros de Caso:</strong>
+                    <ul>
+                        <li>Ao carregar a página, um formulário para o primeiro registro já estará visível.</li>
+                        <li>Preencha os campos: "Endereço", "Diagnóstico" e "Sintomas".</li>
+                        <li>Clique no botão "<strong><i class='fas fa-plus'></i> Adicionar Novo Registro de
+                                Caso</strong>" para adicionar mais formulários, caso queira enviar múltiplos casos na
+                            mesma requisição.</li>
+                        <li>Cada registro pode ser removido individualmente clicando no botão "<i
+                                class='fas fa-trash-alt'></i> Remover".</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Enviar para Análise:</strong>
+                    <ul>
+                        <li>Após preencher os dados dos casos desejados, clique no botão "<strong><i
+                                    class='fas fa-paper-plane'></i> Enviar Dados para Análise</strong>".</li>
+                        <li>A interface automaticamente converterá os dados dos formulários para o formato JSON esperado
+                            pelo backend e enviará a requisição.</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Visualizar Resultado:</strong>
+                    <ul>
+                        <li>A resposta da IA será exibida na seção "Resultado da Análise".</li>
+                        <li>Se a IA retornar dados estruturados (como a lista de análises de doenças que você
+                            especificou), eles serão apresentados em "cards" individuais para melhor leitura.</li>
+                        <li>Se a IA retornar texto formatado em Markdown ou um JSON genérico, a página tentará
+                            formatá-lo da melhor maneira possível.</li>
+                    </ul>
+                </li>
+            </ol>
 
-            <h4>Corpo da Requisição (Body):</h4>
-            <p>Envie um JSON no seguinte formato:</p>
+            <h3>Endpoint de Análise Usado pela Interface</h3>
+            <p>A interface de teste envia os dados para o endpoint <code>POST /analise</code> do seu Agente de IA.</p>
+
+            <h4>Formato do JSON Enviado Automaticamente:</h4>
+            <p>Ao clicar em "Enviar", a interface coleta os dados dos campos e monta um JSON no seguinte formato para o
+                corpo da requisição:</p>
             <pre><code>{
     "dados": [
         {
-            "endereco": "Rua X, Bairro Y",
-            "diagnostico": "Dengue",
-            "sintomas": "febre, dor de cabeça"
-        },
-        // ... mais objetos de dados aqui
-    ]
-}</code></pre>
-
-            <h4>Resposta Esperada:</h4>
-            <p>O servidor responderá com um JSON contendo o resultado da análise:</p>
-            <pre><code>{
-    "resultado": "...resposta do Gemini em formato markdown..."
-}</code></pre>
-            <p>A chave <code>"resultado"</code> conterá a análise textual, que pode incluir formatação Markdown para
-                melhor apresentação.</p>
-        </section>
-
-        <section class="doc-section">
-            <h2>JSON para Testes</h2>
-            <p>Utilize o JSON abaixo para testar o endpoint <code>/analise</code>. Ele contém diversos exemplos de
-                registros de saúde:</p>
-            <pre><code>{
-    "dados": [
-        {
-            "endereco": "Rua das Flores, Centro",
-            "diagnostico": "Dengue",
-            "sintomas": "febre alta, dor de cabeça, dor atrás dos olhos"
+            "endereco": "Valor do campo Endereço do Registro 1",
+            "diagnostico": "Valor do campo Diagnóstico do Registro 1",
+            "sintomas": "Valor do campo Sintomas do Registro 1"
         },
         {
-            "endereco": "Avenida Brasil, Bairro Novo",
-            "diagnostico": "Gripe",
-            "sintomas": "tosse, febre, dor no corpo"
-        },
-        {
-            "endereco": "Rua das Flores, Centro",
-            "diagnostico": "Dengue",
-            "sintomas": "febre, manchas vermelhas, dor muscular"
-        },
-        {
-            "endereco": "Rua do Sol, Bairro Novo",
-            "diagnostico": "Covid-19",
-            "sintomas": "tosse seca, febre, perda de olfato"
-        },
-        {
-            "endereco": "Travessa Alegre, Vila Feliz",
-            "diagnostico": "Dengue",
-            "sintomas": "febre alta, cansaço, dores articulares"
-        },
-        {
-            "endereco": "Rua das Palmeiras, Centro",
-            "diagnostico": "Chikungunya",
-            "sintomas": "febre, dor nas articulações, fadiga"
-        },
-        {
-            "endereco": "Alameda Santos, Bairro Alto",
-            "diagnostico": "Gripe",
-            "sintomas": "calafrios, febre, coriza"
-        },
-        {
-            "endereco": "Avenida Central, Centro",
-            "diagnostico": "Covid-19",
-            "sintomas": "febre, tosse, dor de garganta"
-        },
-        {
-            "endereco": "Rua Rio Branco, Jardim América",
-            "diagnostico": "Dengue",
-            "sintomas": "dor atrás dos olhos, náusea, febre alta"
-        },
-        {
-            "endereco": "Rua das Margaridas, Vila Nova",
-            "diagnostico": "Influenza",
-            "sintomas": "febre, dor muscular, fraqueza"
-        },
-        {
-            "endereco": "Rua Verdejante, Campo Alegre",
-            "diagnostico": "Covid-19",
-            "sintomas": "falta de ar, tosse seca, febre"
-        },
-        {
-            "endereco": "Rua do Comércio, Centro",
-            "diagnostico": "Gripe",
-            "sintomas": "espirros, dor de cabeça, febre"
-        },
-        {
-            "endereco": "Estrada Velha, Bairro Rural",
-            "diagnostico": "Leptospirose",
-            "sintomas": "febre, dor nas panturrilhas, calafrios"
-        },
-        {
-            "endereco": "Rua do Contorno, Bairro Novo",
-            "diagnostico": "Covid-19",
-            "sintomas": "dor de cabeça, febre, perda de paladar"
-        },
-        {
-            "endereco": "Rua das Rosas, Centro",
-            "diagnostico": "Dengue",
-            "sintomas": "manchas na pele, febre, dor muscular"
-        },
-        {
-            "endereco": "Avenida das Nações, Setor Sul",
-            "diagnostico": "Chikungunya",
-            "sintomas": "inchaço nas articulações, febre, fadiga"
-        },
-        {
-            "endereco": "Rua Padre Anchieta, Bairro Velho",
-            "diagnostico": "Gripe",
-            "sintomas": "dor no corpo, febre, espirros"
-        },
-        {
-            "endereco": "Rua do Porto, Vila Marinha",
-            "diagnostico": "Dengue",
-            "sintomas": "febre alta, dor nas costas, cansaço extremo"
-        },
-        {
-            "endereco": "Rua Azul, Bairro Leste",
-            "diagnostico": "Covid-19",
-            "sintomas": "febre persistente, tosse seca, falta de ar"
-        },
-        {
-            "endereco": "Travessa do Norte, Jardim Tropical",
-            "diagnostico": "Influenza",
-            "sintomas": "dor no corpo, calafrios, febre"
-        },
-        {
-            "endereco": "Rua do Mercado, Centro",
-            "diagnostico": "Dengue",
-            "sintomas": "dor abdominal, febre, vômito"
-        },
-        {
-            "endereco": "Rua das Laranjeiras, Bairro Antigo",
-            "diagnostico": "Leptospirose",
-            "sintomas": "dor muscular, olhos avermelhados, febre"
-        },
-        {
-            "endereco": "Rua Projetada, Bairro Novo",
-            "diagnostico": "Covid-19",
-            "sintomas": "febre, dor de garganta, cansaço"
-        },
-        {
-            "endereco": "Rua 7 de Setembro, Vila União",
-            "diagnostico": "Gripe",
-            "sintomas": "espirros, febre, tosse leve"
-        },
-        {
-            "endereco": "Rua do Lago, Jardim Primavera",
-            "diagnostico": "Chikungunya",
-            "sintomas": "febre alta, dor intensa nas articulações, fadiga crônica"
+            "endereco": "Valor do campo Endereço do Registro 2",
+            // ... e assim por diante para cada registro adicionado
         }
     ]
 }</code></pre>
+
+            <h4>Formato da Resposta JSON Esperada da IA:</h4>
+            <p>A interface de teste está preparada para receber e exibir de forma otimizada uma resposta do Agente de IA
+                que seja um array de objetos, onde cada objeto representa uma análise detalhada. O formato ideal é:</p>
+            <pre><code>[
+  {
+    "doenca": "Nome da Doença Analisada",
+    "bairro": "Bairro/Região de Maior Incidência",
+    "causa_possivel": "Descrição da causa provável identificada pela IA.",
+    "mitigacao": "Sugestão de ações de mitigação.",
+    "pq_mitiga": "Explicação de por que a mitigação sugerida pode funcionar.",
+    "estimativa_reducao_percentual": "Ex: 30%",
+    "pq_da_estimativa_reducao_percentual": "Fundamentação para a estimativa de redução."
+  },
+  // ... mais objetos de análise, se houver
+]</code></pre>
+            <p>Se a resposta da IA vier neste formato (seja diretamente como um array JSON, ou como uma string JSON
+                dentro do campo "resultado" ou "raw" da resposta principal do backend), ela será exibida em cards
+                legíveis. Outros formatos de resposta serão exibidos como texto formatado ou JSON bruto.</p>
         </section>
 
         <section class="actions-bar">
-            <a href="teste.html" class="btn btn-primary"><i class="fas fa-flask"></i> Voltar para Teste da IA</a>
+            <a href="teste.html" class="btn btn-primary"><i class="fas fa-flask"></i> Ir para Teste da IA</a>
         </section>
 
         <footer class="page-footer">
