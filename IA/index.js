@@ -77,6 +77,8 @@ Tarefa:
    - Você é apenas uma IA de demonstração, então se só vier por exemplo 1 pessoa, vamos considerar que para cada pessoa enviada temos mais 15 infectadas em cada bairro.
    - explique o porque da causa e da mitigação e o porque da estimativa de redução de casos.
    - O porque da estimativa na redução de casos deve informar dados reais do porque do numero da redução.
+   - Caso você receba vários casos de uma mesma doença, coloque o bairro com a maior incidência, e envie apenas UM caso por doença na resposta.
+   - Sempre formate no formato JSON abaixo, e não no formato de texto.
 
 Formate a resposta como um ARRAY JSON, com objetos contendo:
 [
