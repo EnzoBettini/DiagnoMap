@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor Saúde ProAtivo - Análises e IA</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #0A3D62;
+            --secondary-color: #2C3E50;
+            --accent-color: #E67E22;
+            --highlight-color: #1ABC9C;
+            --danger-color: #E74C3C;
+            --warning-color: #F39C12;
+            --info-color: #3498DB;
+            --success-color: #2ECC71;
+
+            --text-light: #F8F9FA;
+            --text-dark: #343A40;
+            --bg-light: #FFFFFF;
+            --bg-medium: #ECF0F1;
+            --border-color: #D1D8E0;
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-medium);
+            color: var(--text-dark);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar (Estilo do Dashboard Principal) */
+        .sidebar {
+            width: 260px;
+            background-color: var(--secondary-color);
+            color: var(--text-light);
+            padding: 20px 0;
+            transition: width 0.3s ease, padding 0.3s ease;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .sidebar.collapsed {
+            width: 70px;
+            padding: 20px 0;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 10px;
+        }
+
+        .sidebar-header .logo-icon {
+            font-size: 1.8em;
+            color: var(--highlight-color);
+        }
+
+        .sidebar-header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.1em;
+            white-space: nowrap;
+            opacity: 1;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            transform: translateX(0);
+        }
+
+        .sidebar-header h1 .proativo {
+            color: var(--highlight-color);
+            font-weight: 700;
+        }
+
+        .sidebar.collapsed .sidebar-header h1 {
+            opacity: 0;
+            display: none;
+            transform: translateX(-20px);
+        }
+
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 1.2em;
+            cursor: pointer;
+            padding: 10px 20px;
+            text-align: left;
+            width: 100%;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-toggle .fa-bars-staggered,
+        .sidebar-toggle .fa-bars {
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar.collapsed .sidebar-toggle .fa-bars-staggered {
+            display: none;
+        }
+
+        .sidebar.collapsed .sidebar-toggle .fa-bars {
+            display: inline-block;
+            margin: 0 auto;
+        }
+
+        .sidebar .sidebar-toggle .fa-bars {
+            display: none;
+        }
+
+        .nav-menu ul {
+            list-style: none;
+        }
+
+        .nav-menu li a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 0.95em;
+            white-space: nowrap;
+            transition: background-color 0.2s ease, padding-left 0.3s ease;
+        }
+
+        .nav-menu li a:hover,
+        .nav-menu li a.active {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .nav-menu li a .nav-icon {
+            width: 20px;
+            text-align: center;
+            margin-right: 15px;
+            font-size: 1.1em;
+        }
+
+        .sidebar.collapsed .nav-menu li a {
+            padding-left: 25px;
+        }
+
+        .sidebar.collapsed .nav-menu li a .nav-text {
+            opacity: 0;
+            display: none;
+        }
+
+        .sidebar.collapsed .nav-menu li a .nav-icon {
+            margin-right: 0;
+        }
+
+        /* Main Content & Top Header (Estilo do Dashboard Principal) */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .top-header {
+            background-color: var(--bg-light);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .top-header h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.5em;
+            color: var(--primary-color);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-profile .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--border-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2em;
+            color: var(--primary-color);
+        }
+
+        .user-profile span {
+            font-weight: 500;
+        }
+
+        /* Dashboard Area (Estilo Base do Dashboard Principal) */
+        .dashboard-area {
+            flex-grow: 1;
+            padding: 20px 30px;
+            overflow-y: auto;
+        }
+
+        /* Estilos de Componentes Genéricos (Botões, Cards, Modais - do Dashboard Principal) */
+        .btn {
+            padding: 10px 15px;
+            font-size: 0.9em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease, filter 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            justify-content: center;
+            font-weight: 500;
+        }
+
+        .btn:hover {
+            filter: brightness(110%);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-info {
+            background-color: var(--info-color);
+            color: white;
+        }
+
+        .data-card {
+            /* Card genérico para conteúdo */
+            background-color: var(--bg-light);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 20px;
+        }
+
+        .data-card h3 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2em;
+        }
+
+        .data-card h3 i {
+            font-size: 1em;
+        }
+
+        /* Análises e IA Específico */
+        .analysis-selector-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+            background-color: var(--bg-light);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .analysis-selector-bar label {
+            font-size: 0.95em;
+            font-weight: 500;
+            color: var(--secondary-color);
+        }
+
+        .analysis-selector-bar select {
+            padding: 10px 12px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            font-family: 'Roboto', sans-serif;
+            font-size: 1em;
+            flex-grow: 1;
+            max-width: 400px;
+        }
+
+        .analysis-parameters {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .analysis-parameters .parameter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .analysis-parameters label {
+            font-size: 0.8em;
+            margin-bottom: 3px;
+            color: var(--secondary-color);
+        }
+
+        .analysis-parameters input,
+        .analysis-parameters select {
+            padding: 8px 10px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            font-size: 0.9em;
+        }
+
+        .analysis-results-container {
+            display: none;
+            /* Mostrado por JS */
+        }
+
+        .analysis-section {
+            margin-bottom: 25px;
+        }
+
+        .analysis-section h4 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid var(--highlight-color);
+            font-size: 1.1em;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 350px;
+            width: 100%;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 15px;
+        }
+
+        #predictionMapContainer {
+            height: 400px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .interpretation-box {
+            background-color: var(--bg-light);
+            border-left: 5px solid var(--info-color);
+            padding: 15px;
+            border-radius: 0 5px 5px 0;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .interpretation-box p strong {
+            color: var(--primary-color);
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .risk-factor-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .risk-factor-list li {
+            padding: 8px 0;
+            border-bottom: 1px dashed var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .risk-factor-list li:last-child {
+            border-bottom: none;
+        }
+
+        .risk-factor-list .factor-name {
+            font-weight: 500;
+        }
+
+        .risk-factor-list .factor-impact {
+            font-size: 0.9em;
+            padding: 3px 8px;
+            border-radius: 10px;
+            color: white;
+        }
+
+        .factor-impact.high {
+            background-color: var(--danger-color);
+        }
+
+        .factor-impact.medium {
+            background-color: var(--warning-color);
+        }
+
+        .factor-impact.low {
+            background-color: var(--info-color);
+        }
+
+        /* Placeholder para quando nenhuma análise é selecionada */
+        #noAnalysisSelected {
+            text-align: center;
+            padding: 50px 20px;
+            color: #777;
+            font-size: 1.1em;
+        }
+
+        #noAnalysisSelected i {
+            font-size: 3em;
+            margin-bottom: 15px;
+            color: var(--border-color);
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .sidebar.collapsed {
+                width: 100%;
+            }
+
+            .main-content {
+                height: auto;
+            }
+
+            .top-header {
+                flex-direction: column;
+                gap: 10px;
+                padding: 15px;
+            }
+
+            .top-header h2 {
+                font-size: 1.3em;
+            }
+
+            .dashboard-area {
+                padding: 15px;
+            }
+
+            .analysis-selector-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .analysis-selector-bar select {
+                max-width: none;
+            }
+
+            .analysis-parameters {
+                flex-direction: column;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-heart-pulse logo-icon"></i>
+            <h1>Diagno<span class="proativo">Map</span></h1>
+        </div>
+        <button class="sidebar-toggle" id="sidebarToggleBtn">
+            <i class="fas fa-bars-staggered"></i><i class="fas fa-bars"></i> <span class="nav-text">Recolher</span>
+        </button>
+        <nav class="nav-menu">
+            <ul>
+                <li><a href="dashboard.html"><i class="fas fa-tachometer-alt nav-icon"></i> <span
+                            class="nav-text">Dashboard Principal</span></a></li>
+                <li><a href="vigilancia_epidemiologica.html"><i class="fas fa-head-side-virus nav-icon"></i> <span
+                            class="nav-text">Vigilância Epidemiológica</span></a></li>
+                <li><a href="gestao_recursos.html"><i class="fas fa-users-cog nav-icon"></i> <span
+                            class="nav-text">Gestão de Recursos</span></a></li>
+                <li><a href="unidades_saude.html"><i class="fas fa-hospital-user nav-icon"></i> <span
+                            class="nav-text">Unidades de Saúde</span></a></li>
+                <li><a href="#" class="active"><i class="fas fa-chart-pie nav-icon"></i> <span class="nav-text">Análises
+                            e IA</span></a></li>
+                <li><a href="campanhas.html"><i class="fas fa-bullhorn nav-icon"></i> <span
+                            class="nav-text">Campanhas</span></a></li>
+                <li><a href="alertas_criticos.html"><i class="fas fa-bell nav-icon"></i> <span class="nav-text">Alertas
+                            Críticos</span></a></li>
+                <li><a href="relatorios.html"><i class="fas fa-file-medical-alt nav-icon"></i> <span
+                            class="nav-text">Relatórios</span></a></li>
+                <li><a href="../index.html"><i class="fas fa-solid fa-rotate-left nav-icon"></i> <span class="nav-text">Voltar ao
+                            menu</span></a></li>
+            </ul>
+        </nav>
+        <div style="margin-top: auto; padding: 0 20px 20px 20px;">
+            <a href="#"
+                style="display: flex; align-items: center; padding: 12px 0; color: var(--text-light); text-decoration: none; font-size: 0.95em; white-space: nowrap;">
+                <i class="fas fa-cog nav-icon"></i> <span class="nav-text">Configurações</span>
+            </a>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <header class="top-header">
+            <h2>Modelos Analíticos e Inteligência Artificial</h2>
+            <div class="user-profile">
+                <div class="avatar"><i class="fas fa-user-tie"></i></div>
+                <span>Marcelo (Secretário de Saúde Municipal)</span>
+            </div>
+        </header>
+
+        <main class="dashboard-area">
+            <section class="analysis-selector-bar">
+                <label for="analysisTypeSelector">Selecione o Modelo/Análise de IA:</label>
+                <select id="analysisTypeSelector">
+                    <option value="">-- Escolha uma análise --</option>
+                    <option value="previsao_surtos_dengue">Previsão de Surtos de Dengue</option>
+                    <option value="segmentacao_risco_hipertensao">Segmentação de Risco (Hipertensão)</option>
+                    <option value="otimizacao_filas_ubs">Análise de Causa Raiz: Filas em UBS</option>
+                    <option value="predicao_demanda_pediatria">Previsão de Demanda (Pediatria)</option>
+                </select>
+                <button class="btn btn-primary" id="loadAnalysisBtn"><i class="fas fa-cogs"></i> Carregar/Executar
+                    Análise</button>
+            </section>
+
+            <div id="noAnalysisSelected">
+                <i class="fas fa-microscope"></i>
+                <p>Selecione um modelo analítico ou de IA no menu acima para visualizar os resultados e insights.</p>
+            </div>
+
+            <div id="analysisResultsContainer" class="analysis-results-container">
+            </div>
+        </main>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        // --- JavaScript Base (Sidebar) ---
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
+        let activeCharts = {}; // Para armazenar instâncias de gráficos ativos
+        let activeMap = null;
+
+
+        sidebarToggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+            setTimeout(() => {
+                if (activeMap) activeMap.invalidateSize();
+                Object.values(activeCharts).forEach(chart => {
+                    if (chart) chart.resize();
+                });
+            }, 310);
+        });
+
+        // --- JavaScript Específico da Página de Análises e IA ---
+        const analysisTypeSelector = document.getElementById('analysisTypeSelector');
+        const loadAnalysisBtn = document.getElementById('loadAnalysisBtn');
+        const resultsContainer = document.getElementById('analysisResultsContainer');
+        const noAnalysisPlaceholder = document.getElementById('noAnalysisSelected');
+
+        loadAnalysisBtn.addEventListener('click', () => {
+            const selectedAnalysis = analysisTypeSelector.value;
+            loadAnalysisResults(selectedAnalysis);
+        });
+
+        function clearPreviousAnalysis() {
+            resultsContainer.innerHTML = '';
+            resultsContainer.style.display = 'none';
+            noAnalysisPlaceholder.style.display = 'block';
+            Object.values(activeCharts).forEach(chart => {
+                if (chart) chart.destroy();
+            });
+            activeCharts = {};
+            if (activeMap) {
+                activeMap.remove();
+                activeMap = null;
+            }
+        }
+
+        function loadAnalysisResults(analysisType) {
+            clearPreviousAnalysis();
+            if (!analysisType) return;
+
+            noAnalysisPlaceholder.style.display = 'none';
+            resultsContainer.style.display = 'block';
+
+            // Simulação de carregamento de diferentes análises
+            if (analysisType === 'previsao_surtos_dengue') {
+                renderPrevisaoSurtosDengue();
+            } else if (analysisType === 'segmentacao_risco_hipertensao') {
+                renderSegmentacaoRiscoHipertensao();
+            } else if (analysisType === 'otimizacao_filas_ubs') {
+                renderOtimizacaoFilasUBS();
+            } else if (analysisType === 'predicao_demanda_pediatria') {
+                renderPredicaoDemandaPediatria();
+            } else {
+                resultsContainer.innerHTML = '<p>Análise não implementada para demonstração.</p>';
+            }
+        }
+
+        function renderPrevisaoSurtosDengue() {
+            resultsContainer.innerHTML = `
+                <div class="data-card">
+                    <h3><i class="fas fa-viruses"></i> Previsão de Surtos de Dengue - Próximas 4 Semanas</h3>
+                    <div class="analysis-parameters">
+                        <div class="parameter-group">
+                            <label for="paramRegiaoDengue">Região de Análise:</label>
+                            <select id="paramRegiaoDengue"><option value="municipio">Todo Município</option><option value="leste">Região Leste</option><option value="norte">Região Norte</option></select>
+                        </div>
+                        <div class="parameter-group">
+                            <label for="paramConfiancaDengue">Nível de Confiança:</label>
+                            <select id="paramConfiancaDengue"><option value="95">95%</option><option value="90">90%</option><option value="80">80%</option></select>
+                        </div>
+                    </div>
+                    <div class="results-grid">
+                        <div class="analysis-section">
+                            <h4>Previsão Temporal de Casos</h4>
+                            <div class="chart-container"><canvas id="denguePredictionChart"></canvas></div>
+                        </div>
+                        <div class="analysis-section">
+                            <h4>Mapa de Risco Previsto</h4>
+                            <div id="predictionMapContainer"></div>
+                        </div>
+                    </div>
+                    <div class="analysis-section">
+                        <h4>Principais Fatores de Risco Identificados (IA)</h4>
+                        <ul class="risk-factor-list">
+                            <li><span class="factor-name">Índice de Infestação Predial (LIRAa) > 3%</span><span class="factor-impact high">Alto</span></li>
+                            <li><span class="factor-name">Temperatura Média Semanal > 28°C</span><span class="factor-impact medium">Médio</span></li>
+                            <li><span class="factor-name">Chuvas Acumuladas > 50mm (últimos 7 dias)</span><span class="factor-impact medium">Médio</span></li>
+                            <li><span class="factor-name">Baixa Adesão à Remoção de Criadouros</span><span class="factor-impact low">Baixo</span></li>
+                        </ul>
+                    </div>
+                    <div class="analysis-section">
+                        <h4>Interpretação e Recomendações (IA)</h4>
+                        <div class="interpretation-box">
+                            <p><strong>Previsão:</strong> Aumento de <strong>15-25%</strong> no número de casos de Dengue esperado para a Região Leste nas próximas 2 semanas, com pico na semana 3. Região Norte com risco moderado.</p>
+                            <p><strong>Recomendações:</strong> Intensificar visitas de agentes de endemias na Região Leste. Realizar mutirões de limpeza focados. Alertar unidades de saúde para aumento de demanda. Considerar campanha de conscientização sobre eliminação de criadouros.</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Gráfico de Previsão de Dengue
+            const dengueCtx = document.getElementById('denguePredictionChart').getContext('2d');
+            const historicalData = [12, 15, 10, 18, 22, 20]; // Últimas 6 semanas (real)
+            const predictedData = [null, null, null, null, null, 20, 25, 30, 28, 22]; // Previsão para as próximas 4 semanas (+ última real)
+            const confidenceUpper = [null, null, null, null, null, 20, 28, 35, 32, 26];
+            const confidenceLower = [null, null, null, null, null, 20, 22, 25, 24, 18];
+
+            activeCharts['denguePrediction'] = new Chart(dengueCtx, {
+                type: 'line',
+                data: {
+                    labels: ['S-6', 'S-5', 'S-4', 'S-3', 'S-2', 'S-1 (Atual)', 'S+1', 'S+2', 'S+3', 'S+4'],
+                    datasets: [
+                        { label: 'Casos Históricos', data: historicalData, borderColor: 'var(--primary-color)', tension: 0.1, fill: false },
+                        { label: 'Previsão IA', data: predictedData, borderColor: 'var(--danger-color)', borderDash: [5, 5], tension: 0.1, fill: false },
+                        { label: 'Intervalo de Confiança (95%)', data: confidenceUpper, borderColor: 'rgba(231, 76, 60, 0.3)', fill: '+1', tension: 0.1, pointRadius: 0 },
+                        { label: 'Limite Inferior IC', data: confidenceLower, borderColor: 'rgba(231, 76, 60, 0.3)', fill: false, tension: 0.1, pointRadius: 0, showLegend: false }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } }, legend: { display: true } }
+            });
+
+            // Mapa de Risco Previsto
+            activeMap = L.map('predictionMapContainer').setView([-25.43, -49.27], 12);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(activeMap);
+            L.circle([-25.44, -49.20], { color: 'red', fillColor: '#f03', fillOpacity: 0.6, radius: 1200 }).addTo(activeMap).bindPopup("Região Leste: Alto Risco de Surto");
+            L.circle([-25.40, -49.25], { color: 'orange', fillColor: '#f80', fillOpacity: 0.5, radius: 1000 }).addTo(activeMap).bindPopup("Região Norte: Risco Moderado");
+        }
+
+        function renderSegmentacaoRiscoHipertensao() {
+            resultsContainer.innerHTML = `
+                <div class="data-card">
+                    <h3><i class="fas fa-heartbeat"></i> Segmentação de Risco para Pacientes com Hipertensão</h3>
+                     <div class="analysis-parameters">
+                        <div class="parameter-group">
+                            <label for="paramUnidadeHipertensao">Unidade de Saúde:</label>
+                            <select id="paramUnidadeHipertensao"><option value="todas">Todas</option><option value="ubs_centro">UBS Centro</option></select>
+                        </div>
+                         <div class="parameter-group">
+                            <label for="paramIdadeMin">Idade Mínima:</label>
+                            <input type="number" id="paramIdadeMin" value="40">
+                        </div>
+                    </div>
+                    <div class="results-grid">
+                        <div class="analysis-section">
+                            <h4>Distribuição de Pacientes por Nível de Risco</h4>
+                            <div class="chart-container" style="height:300px;"><canvas id="hipertensaoRiscoChart"></canvas></div>
+                        </div>
+                        <div class="analysis-section">
+                            <h4>Principais Fatores por Segmento (IA)</h4>
+                            <p><strong>Alto Risco:</strong> Idade > 65, Histórico Familiar, Tabagismo, Não Adesão ao Tratamento.</p>
+                            <p><strong>Médio Risco:</strong> Sobrepeso/Obesidade, Sedentarismo, Pressão Sistólica Limítrofe.</p>
+                            <p><strong>Baixo Risco:</strong> Controlados, Boa Adesão, Estilo de Vida Saudável.</p>
+                        </div>
+                    </div>
+                    <div class="analysis-section">
+                        <h4>Interpretação e Recomendações (IA)</h4>
+                        <div class="interpretation-box">
+                            <p><strong>Identificação:</strong> <strong>15%</strong> dos pacientes hipertensos cadastrados na UBS Centro foram classificados como de Alto Risco cardiovascular.</p>
+                            <p><strong>Recomendações:</strong> Priorizar acompanhamento intensivo para o grupo de Alto Risco (consultas mais frequentes, busca ativa). Implementar programa de combate ao tabagismo. Promover grupos de atividade física para pacientes de Médio Risco. Reforçar importância da adesão medicamentosa para todos os segmentos.</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            // Gráfico de Segmentação de Risco
+            const riscoCtx = document.getElementById('hipertensaoRiscoChart').getContext('2d');
+            activeCharts['hipertensaoRisco'] = new Chart(riscoCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Alto Risco', 'Médio Risco', 'Baixo Risco'],
+                    datasets: [{
+                        label: 'Pacientes',
+                        data: [150, 350, 500], // Exemplo: 150 Alto, 350 Médio, 500 Baixo
+                        backgroundColor: ['var(--danger-color)', 'var(--warning-color)', 'var(--success-color)'],
+                        hoverOffset: 4
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+
+        function renderOtimizacaoFilasUBS() {
+            resultsContainer.innerHTML = `
+                <div class="data-card">
+                    <h3><i class="fas fa-users-slash"></i> Análise de Causa Raiz: Filas de Espera em UBS</h3>
+                     <div class="analysis-parameters">
+                        <div class="parameter-group">
+                            <label for="paramUBSFila">Selecionar UBS:</label>
+                            <select id="paramUBSFila"><option value="ubs_vila_feliz">UBS Vila Feliz</option><option value="ubs_centro">UBS Centro</option></select>
+                        </div>
+                         <div class="parameter-group">
+                            <label for="paramEspecialidadeFila">Especialidade:</label>
+                            <select id="paramEspecialidadeFila"><option value="clinica_geral">Clínica Geral</option><option value="pediatria">Pediatria</option></select>
+                        </div>
+                    </div>
+                    <div class="results-grid">
+                        <div class="analysis-section">
+                            <h4>Tempo Médio de Espera (Histórico e Previsão)</h4>
+                            <div class="chart-container"><canvas id="filaEsperaChart"></canvas></div>
+                        </div>
+                        <div class="analysis-section">
+                            <h4>Fatores de Impacto na Fila (Análise IA)</h4>
+                             <ul class="risk-factor-list">
+                                <li><span class="factor-name">Concentração de Agendamentos (Manhã)</span><span class="factor-impact high">Alto</span></li>
+                                <li><span class="factor-name">Faltas não comunicadas (No-show)</span><span class="factor-impact medium">Médio</span></li>
+                                <li><span class="factor-name">Tempo de Consulta > Previsto</span><span class="factor-impact medium">Médio</span></li>
+                                <li><span class="factor-name">Disponibilidade Reduzida de Médicos (Terças)</span><span class="factor-impact high">Alto</span></li>
+                                 <li><span class="factor-name">Processos Administrativos Lentos</span><span class="factor-impact low">Baixo</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                     <div class="analysis-section">
+                        <h4>Interpretação e Recomendações (IA)</h4>
+                        <div class="interpretation-box">
+                            <p><strong>Diagnóstico:</strong> O tempo médio de espera para Clínica Geral na UBS Vila Feliz tem picos nas segundas e terças pela manhã, chegando a 1h30min. A falta de um clínico às terças e o alto índice de no-show (18%) são os principais causadores.</p>
+                            <p><strong>Recomendações:</strong> Implementar sistema de confirmação de consultas via SMS/WhatsApp 24h antes. Avaliar redistribuição de horários de médicos para cobrir picos. Criar "fila de encaixe inteligente" para pacientes com sintomas agudos. Treinar equipe de recepção para triagem mais eficiente.</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            // Gráfico Tempo de Espera
+            const filaEsperaCtx = document.getElementById('filaEsperaChart').getContext('2d');
+            activeCharts['filaEspera'] = new Chart(filaEsperaCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'],
+                    datasets: [
+                        { label: 'Espera Manhã (min)', data: [75, 90, 60, 55, 65], backgroundColor: 'rgba(255, 159, 64, 0.7)' },
+                        { label: 'Espera Tarde (min)', data: [40, 50, 35, 30, 40], backgroundColor: 'rgba(75, 192, 192, 0.7)' }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, title: { display: true, text: "Minutos" } } } }
+            });
+        }
+
+        function renderPredicaoDemandaPediatria() {
+            resultsContainer.innerHTML = `
+                <div class="data-card">
+                    <h3><i class="fas fa-baby"></i> Previsão de Demanda por Atendimentos Pediátricos</h3>
+                    <div class="analysis-parameters">
+                        <div class="parameter-group">
+                            <label for="paramHorizontePediatria">Horizonte de Previsão:</label>
+                            <select id="paramHorizontePediatria">
+                                <option value="7d">Próximos 7 dias</option>
+                                <option value="14d" selected>Próximos 14 dias</option>
+                                <option value="30d">Próximos 30 dias</option>
+                            </select>
+                        </div>
+                        <div class="parameter-group">
+                            <label for="paramFatoresPediatria">Considerar Fatores Sazonais:</label>
+                            <select id="paramFatoresPediatria">
+                                <option value="sim">Sim (Ex: Inverno, Volta às aulas)</option>
+                                <option value="nao">Não</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="analysis-section">
+                        <h4>Previsão de Consultas Pediátricas Diárias</h4>
+                        <div class="chart-container"><canvas id="pediatriaDemandaChart"></canvas></div>
+                    </div>
+                    <div class="analysis-section">
+                        <h4>Interpretação e Recomendações (IA)</h4>
+                        <div class="interpretation-box">
+                            <p><strong>Previsão:</strong> Espera-se um aumento na procura por consultas pediátricas nos próximos 10 dias, atingindo um pico de aproximadamente <strong>60 consultas/dia</strong>, possivelmente devido ao início do período mais frio e aumento de doenças respiratórias.</p>
+                            <p><strong>Recomendações:</strong> Alertar UBS com maior volume pediátrico (UBS Norte, UBS Feliz). Avaliar necessidade de reforço na escala de pediatras ou remanejamento temporário. Verificar estoque de medicamentos para síndromes gripais infantis.</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Gráfico de Previsão de Demanda Pediátrica (Exemplo com datas)
+            const pediatriaCtx = document.getElementById('pediatriaDemandaChart').getContext('2d');
+            const hoje = new Date();
+            const labels = [];
+            const historico = [];
+            const previsao = [];
+            for (let i = -6; i < 15; i++) { // 7 dias de histórico, 14 de previsão
+                const dia = new Date(hoje);
+                dia.setDate(hoje.getDate() + i);
+                labels.push(dia);
+                if (i < 0) {
+                    historico.push(Math.floor(Math.random() * 20) + 30); // 30-49
+                } else if (i === 0) {
+                    const ultimoHistorico = Math.floor(Math.random() * 20) + 30;
+                    historico.push(ultimoHistorico);
+                    previsao.push(ultimoHistorico); // Ponto de partida da previsão
+                } else {
+                    historico.push(null);
+                    // Simular aumento e depois queda
+                    let valorPrevisto = 40 + i * 2 - Math.pow(i - 7, 2) * 0.3 + Math.random() * 5;
+                    previsao.push(Math.max(20, Math.round(valorPrevisto)));
+                }
+            }
+
+            activeCharts['pediatriaDemanda'] = new Chart(pediatriaCtx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Atendimentos Realizados', data: historico, borderColor: 'var(--primary-color)', tension: 0.2, fill: false },
+                        { label: 'Previsão de Demanda (IA)', data: previsao, borderColor: 'var(--accent-color)', borderDash: [5, 5], tension: 0.2, fill: false }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: {
+                        x: { type: 'time', time: { unit: 'day', tooltipFormat: 'dd/MM/yyyy', displayFormats: { day: 'dd/MM' } } },
+                        y: { beginAtZero: true, title: { display: true, text: 'Nº de Consultas' } }
+                    }
+                }
+            });
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            clearPreviousAnalysis(); // Garante que o placeholder apareça inicialmente
+        });
+
+    </script>
+</body>
+
+</html>

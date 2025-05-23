@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor Saúde ProAtivo - Central de Relatórios</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #0A3D62;
+            --secondary-color: #2C3E50;
+            --accent-color: #E67E22;
+            --highlight-color: #1ABC9C;
+            --danger-color: #E74C3C;
+            --warning-color: #F39C12;
+            --info-color: #3498DB;
+            --success-color: #2ECC71;
+
+            --text-light: #F8F9FA;
+            --text-dark: #343A40;
+            --bg-light: #FFFFFF;
+            --bg-medium: #ECF0F1;
+            --bg-darker: #dee4e7;
+            /* Para contraste em tabelas/áreas */
+            --border-color: #D1D8E0;
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-medium);
+            color: var(--text-dark);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar (Estilo Padrão) */
+        .sidebar {
+            width: 260px;
+            background-color: var(--secondary-color);
+            color: var(--text-light);
+            padding: 20px 0;
+            transition: width 0.3s ease;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .sidebar.collapsed {
+            width: 70px;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 10px;
+        }
+
+        .sidebar-header .logo-icon {
+            font-size: 1.8em;
+            color: var(--highlight-color);
+        }
+
+        .sidebar-header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.1em;
+            white-space: nowrap;
+            opacity: 1;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            transform: translateX(0);
+        }
+
+        .sidebar-header h1 .proativo {
+            color: var(--highlight-color);
+            font-weight: 700;
+        }
+
+        .sidebar.collapsed .sidebar-header h1 {
+            opacity: 0;
+            display: none;
+            transform: translateX(-20px);
+        }
+
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 1.2em;
+            cursor: pointer;
+            padding: 10px 20px;
+            text-align: left;
+            width: 100%;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-toggle .fa-bars-staggered,
+        .sidebar-toggle .fa-bars {
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar.collapsed .sidebar-toggle .fa-bars-staggered {
+            display: none;
+        }
+
+        .sidebar.collapsed .sidebar-toggle .fa-bars {
+            display: inline-block;
+            margin: 0 auto;
+        }
+
+        .sidebar .sidebar-toggle .fa-bars {
+            display: none;
+        }
+
+        .nav-menu ul {
+            list-style: none;
+        }
+
+        .nav-menu li a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 0.95em;
+            white-space: nowrap;
+            transition: background-color 0.2s ease, padding-left 0.3s ease;
+        }
+
+        .nav-menu li a:hover,
+        .nav-menu li a.active {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .nav-menu li a .nav-icon {
+            width: 20px;
+            text-align: center;
+            margin-right: 15px;
+            font-size: 1.1em;
+        }
+
+        .sidebar.collapsed .nav-menu li a {
+            padding-left: 25px;
+        }
+
+        .sidebar.collapsed .nav-menu li a .nav-text {
+            opacity: 0;
+            display: none;
+        }
+
+        .sidebar.collapsed .nav-menu li a .nav-icon {
+            margin-right: 0;
+        }
+
+        /* Main Content & Top Header (Estilo Padrão) */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .top-header {
+            background-color: var(--bg-light);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .top-header h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.5em;
+            color: var(--primary-color);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-profile .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--border-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2em;
+            color: var(--primary-color);
+        }
+
+        .user-profile span {
+            font-weight: 500;
+        }
+
+        .dashboard-area {
+            flex-grow: 1;
+            padding: 20px 30px;
+            overflow-y: auto;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            font-size: 0.9em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: filter 0.2s ease, box-shadow 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            justify-content: center;
+            font-weight: 500;
+        }
+
+        .btn:hover {
+            filter: brightness(110%);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-accent {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+
+        /* Relatórios Específico - Melhorias Visuais */
+        .report-generator-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            /* Coluna de parâmetros um pouco maior */
+            gap: 25px;
+            height: calc(100% - 20px);
+        }
+
+        .report-parameters-panel {
+            background-color: var(--bg-light);
+            padding: 25px;
+            /* Mais padding */
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            /* Maior espaçamento entre grupos */
+            overflow-y: auto;
+            border-top: 4px solid var(--primary-color);
+            /* Destaque superior */
+        }
+
+        .report-parameters-panel h3 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--primary-color);
+            font-size: 1.3em;
+            /* Título maior */
+            margin: 0 0 15px 0;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            /* Mais espaço */
+            font-size: 0.9em;
+            color: var(--secondary-color);
+        }
+
+        .form-group select,
+        .form-group input[type="date"],
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            /* Inputs maiores */
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            /* Bordas mais arredondadas */
+            font-size: 0.95em;
+            font-family: 'Roboto', sans-serif;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb, 10, 61, 98), 0.25);
+            /* Usar RGB para box-shadow */
+        }
+
+        #generateReportBtn {
+            margin-top: auto;
+            /* Empurra para o final do painel */
+            padding: 12px 20px;
+            font-size: 1em;
+        }
+
+        #generateReportBtn:disabled {
+            background-color: var(--border-color);
+            cursor: not-allowed;
+        }
+
+
+        .report-output-panel {
+            background-color: var(--bg-light);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            border-top: 4px solid var(--highlight-color);
+        }
+
+        .report-output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .report-output-header h3 {
+            margin: 0;
+            font-size: 1.4em;
+            color: var(--primary-color);
+            font-family: 'Montserrat'
+        }
+
+        .report-actions button {
+            margin-left: 10px;
+        }
+
+        #reportOutputArea {
+            font-family: 'Roboto', sans-serif;
+            /* Consistência com o resto da UI */
+            line-height: 1.7;
+            /* Melhor legibilidade */
+            color: var(--text-dark);
+        }
+
+        #reportOutputArea h4 {
+            font-size: 1.25em;
+            /* Títulos de seção mais proeminentes */
+            color: var(--secondary-color);
+            margin-top: 25px;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--highlight-color);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        #reportOutputArea h4:first-child {
+            margin-top: 0;
+        }
+
+        #reportOutputArea p {
+            margin-bottom: 12px;
+            font-size: 0.98em;
+        }
+
+        #reportOutputArea table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 0.92em;
+            box-shadow: var(--shadow-sm);
+        }
+
+        #reportOutputArea th,
+        #reportOutputArea td {
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            /* Mais padding nas células */
+            text-align: left;
+        }
+
+        #reportOutputArea th {
+            background-color: var(--bg-darker);
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        #reportOutputArea tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        #reportOutputArea tbody tr:hover {
+            background-color: var(--bg-medium);
+        }
+
+        .report-chart-container {
+            width: 100%;
+            max-width: 650px;
+            height: 320px;
+            margin: 20px auto;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: #fff;
+            /* Fundo branco para gráficos */
+        }
+
+        .report-placeholder {
+            text-align: center;
+            color: #777;
+            padding: 50px 20px;
+            font-size: 1.1em;
+            margin: auto;
+        }
+
+        .report-placeholder i {
+            font-size: 3em;
+            margin-bottom: 15px;
+            color: var(--border-color);
+        }
+
+        /* Responsividade */
+        @media (max-width: 992px) {
+            .report-generator-layout {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+
+            .report-parameters-panel {
+                margin-bottom: 20px;
+                max-height: none;
+            }
+
+            .report-output-panel {
+                min-height: 50vh;
+           }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .sidebar.collapsed {
+                width: 100%;
+            }
+
+            .main-content {
+                height: auto;
+            }
+
+            .top-header {
+                flex-direction: column;
+                gap: 10px;
+                padding: 15px;
+            }
+
+            .dashboard-area {
+                padding: 15px;
+            }
+
+            .report-output-header {
+                flex-direction: column;
+                gap: 10px;
+                align-items: stretch;
+            }
+
+            .report-actions {
+                text-align: center;
+            }
+
+            .report-actions button {
+                margin: 5px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-heart-pulse logo-icon"></i>
+            <h1>Diagno<span class="proativo">Map</span></h1>
+        </div>
+        <button class="sidebar-toggle" id="sidebarToggleBtn">
+            <i class="fas fa-bars-staggered"></i><i class="fas fa-bars"></i> <span class="nav-text">Recolher</span>
+        </button>
+        <nav class="nav-menu">
+            <ul>
+                <li><a href="dashboard.html"><i class="fas fa-tachometer-alt nav-icon"></i> <span
+                            class="nav-text">Dashboard Principal</span></a></li>
+                <li><a href="vigilancia_epidemiologica.html"><i class="fas fa-head-side-virus nav-icon"></i> <span
+                            class="nav-text">Vigilância Epidemiológica</span></a></li>
+                <li><a href="gestao_recursos.html"><i class="fas fa-users-cog nav-icon"></i> <span
+                            class="nav-text">Gestão de Recursos</span></a></li>
+                <li><a href="unidades_saude.html"><i class="fas fa-hospital-user nav-icon"></i> <span
+                            class="nav-text">Unidades de Saúde</span></a></li>
+                <li><a href="analises_ia.html"><i class="fas fa-chart-pie nav-icon"></i> <span class="nav-text">Análises
+                            e IA</span></a></li>
+                <li><a href="campanhas.html"><i class="fas fa-bullhorn nav-icon"></i> <span
+                            class="nav-text">Campanhas</span></a></li>
+                <li><a href="alertas_criticos.html"><i class="fas fa-bell nav-icon"></i> <span class="nav-text">Alertas
+                            Críticos</span></a></li>
+                <li><a href="#" class="active"><i class="fas fa-file-medical-alt nav-icon"></i> <span
+                            class="nav-text">Relatórios</span></a></li>
+                <li><a href="../index.html"><i class="fas fa-solid fa-rotate-left nav-icon"></i> <span
+                            class="nav-text">Voltar ao menu</span></a></li>
+            </ul>
+        </nav>
+        <div style="margin-top: auto; padding: 0 20px 20px 20px;">
+            <a href="#"
+                style="display: flex; align-items: center; padding: 12px 0; color: var(--text-light); text-decoration: none; font-size: 0.95em; white-space: nowrap;">
+                <i class="fas fa-cog nav-icon"></i> <span class="nav-text">Configurações</span>
+            </a>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <header class="top-header">
+            <h2>Central de Relatórios Gerenciais</h2>
+            <div class="user-profile">
+                <div class="avatar"><i class="fas fa-user-tie"></i></div>
+                <span>Marcelo (Secretário de Saúde Municipal)</span>
+            </div>
+        </header>
+
+        <main class="dashboard-area">
+            <div class="report-generator-layout">
+                <aside class="report-parameters-panel">
+                    <h3><i class="fas fa-sliders-h"></i> Configurar Relatório</h3>
+                    <div class="form-group">
+                        <label for="reportTypeSelector">Tipo de Relatório:</label>
+                        <select id="reportTypeSelector">
+                            <option value="">-- Selecione um Tipo --</option>
+                            <option value="epidemiologico_mensal">Epidemiológico Mensal</option>
+                            <option value="produtividade_unidades">Produtividade de Unidades</option>
+                            <option value="alocacao_rh">Alocação de Recursos Humanos</option>
+                            <option value="cobertura_vacinal_detalhada">Cobertura Vacinal Detalhada</option>
+                            <option value="filas_espera_tendencia">Tendência de Filas de Espera</option>
+                        </select>
+                    </div>
+
+                    <div id="dynamicParamsContainer">
+                        <div class="form-group">
+                            <label for="paramPeriodoInicio">Data de Início:</label>
+                            <input type="date" id="paramPeriodoInicio" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="paramPeriodoFim">Data de Fim:</label>
+                            <input type="date" id="paramPeriodoFim" disabled>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" id="generateReportBtn" disabled><i class="fas fa-file-invoice"></i>
+                        Gerar Relatório</button>
+                </aside>
+
+                <section class="report-output-panel">
+                    <div class="report-output-header">
+                        <h3 id="reportTitlePreview">Visualização do Relatório</h3>
+                        <div class="report-actions" id="reportActionsContainer" style="display:none;">
+                            <button class="btn btn-secondary" id="printReportBtn"><i class="fas fa-print"></i>
+                                Imprimir</button>
+                            <button class="btn btn-success" id="exportCsvBtn"><i class="fas fa-file-csv"></i> Exportar
+                                Dados (CSV)</button>
+                            <button class="btn btn-accent" id="exportPdfBtn"><i class="fas fa-file-pdf"></i> Exportar
+                                Relatório (PDF)</button>
+                        </div>
+                    </div>
+                    <div id="reportOutputArea">
+                        <div class="report-placeholder">
+                            <i class="fas fa-file-alt"></i>
+                            <p>Selecione um tipo de relatório e defina os parâmetros para gerar a visualização.</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        // --- JavaScript Base (Sidebar) ---
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
+        let activeReportCharts = [];
+
+        sidebarToggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+            setTimeout(() => {
+                activeReportCharts.forEach(chart => { if (chart) chart.resize(); });
+            }, 310);
+        });
+
+        // --- JavaScript Específico da Página de Relatórios ---
+        const reportTypeSelector = document.getElementById('reportTypeSelector');
+        const dynamicParamsContainer = document.getElementById('dynamicParamsContainer');
+        const generateReportBtn = document.getElementById('generateReportBtn');
+        const reportOutputArea = document.getElementById('reportOutputArea');
+        const reportTitlePreview = document.getElementById('reportTitlePreview');
+        const reportActionsContainer = document.getElementById('reportActionsContainer');
+
+        // Definir primary-color-rgb para o box-shadow dos inputs
+        document.documentElement.style.setProperty('--primary-color-rgb', hexToRgb(getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim()));
+
+        function hexToRgb(hex) {
+            let r = 0, g = 0, b = 0;
+            if (hex.length === 4) { // #RGB
+                r = parseInt(hex[1] + hex[1], 16);
+                g = parseInt(hex[2] + hex[2], 16);
+                b = parseInt(hex[3] + hex[3], 16);
+            } else if (hex.length === 7) { // #RRGGBB
+                r = parseInt(hex[1] + hex[2], 16);
+                g = parseInt(hex[3] + hex[4], 16);
+                b = parseInt(hex[5] + hex[6], 16);
+            }
+            return `${r},${g},${b}`;
+        }
+
+
+        const reportTemplates = {
+            epidemiologico_mensal: {
+                name: "Relatório Epidemiológico Mensal",
+                params: [{ id: 'paramDoencaEspecifica', label: 'Doença Específica (Opcional):', type: 'text', placeholder: 'Ex: Dengue (deixe em branco para todas)' }],
+                generate: (params) => {
+                    const doenca = params.paramDoencaEspecifica || "Todas as Doenças de Notificação Compulsória";
+                    const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun']; // Para gráficos de tendência
+                    const casosDengueTrend = [15, 25, 20, 45, 30, 55];
+                    const totalNotificacoesTrend = [120, 150, 130, 180, 160, 220];
+
+                    let content = `<h4>1. Resumo Geral (Período: ${formatDateForDisplay(params.paramPeriodoInicio)} a ${formatDateForDisplay(params.paramPeriodoFim)})</h4>
+                                  <p>Este relatório apresenta a consolidação dos dados epidemiológicos para <strong>${doenca}</strong> durante o período especificado. Foram registrados <strong>${totalNotificacoesTrend.reduce((a, b) => a + b, 0)}</strong> novas notificações (simulado).</p>
+                                  <h4>2. Casos Notificados por Doença (Top 5)</h4>
+                                  <table><thead><tr><th>Doença</th><th>Casos Suspeitos</th><th>Confirmados</th><th>Descartados</th><th>Óbitos</th></tr></thead>
+                                  <tbody>
+                                    <tr><td>Dengue</td><td>120</td><td>85</td><td>30</td><td>2</td></tr>
+                                    <tr><td>Chikungunya</td><td>45</td><td>20</td><td>25</td><td>0</td></tr>
+                                    <tr><td>Zika Vírus</td><td>30</td><td>10</td><td>18</td><td>0</td></tr>
+                                    <tr><td>Influenza (Gripe)</td><td>250</td><td>180</td><td>N/A</td><td>5</td></tr>
+                                    <tr><td>COVID-19</td><td>90</td><td>60</td><td>N/A</td><td>1</td></tr>
+                                  </tbody></table>
+                                  <h4>3. Tendência Mensal de Casos de Dengue</h4>
+                                  <div class="report-chart-container"><canvas id="reportChartTendenciaDengue"></canvas></div>
+                                  <h4>4. Evolução Mensal de Notificações (Geral)</h4>
+                                  <div class="report-chart-container"><canvas id="reportChartTotalNotificacoes"></canvas></div>
+                                  <h4>5. Distribuição Geográfica (Casos de Dengue Confirmados - Simulado)</h4>
+                                  <p>Região Leste apresentou a maior concentração de casos (45% do total), seguida pela Região Norte (25% do total). Recomenda-se análise georreferenciada detalhada para identificar clusters.</p>
+                                  <h4>6. Conclusões e Recomendações</h4>
+                                  <p>Observou-se um aumento significativo nos casos de Dengue no último bimestre, especialmente na Região Leste. Recomenda-se intensificar ações de combate ao vetor Aedes Aegypti nestas áreas e alertar as unidades de saúde para aumento da demanda. A situação da Influenza requer monitoramento contínuo, com tendência de alta para os próximos meses de inverno.</p>`;
+
+                    setTimeout(() => { // Delay para garantir que o canvas está no DOM
+                        renderChart('reportChartTendenciaDengue', 'line', {
+                            labels: meses,
+                            datasets: [{ label: 'Casos de Dengue', data: casosDengueTrend, borderColor: 'var(--danger-color)', backgroundColor: 'rgba(231, 76, 60, 0.1)', tension: 0.3, fill: true }]
+                        });
+                        renderChart('reportChartTotalNotificacoes', 'line', {
+                            labels: meses,
+                            datasets: [{ label: 'Total de Notificações', data: totalNotificacoesTrend, borderColor: 'var(--primary-color)', backgroundColor: 'rgba(10, 61, 98, 0.1)', tension: 0.3, fill: true }]
+                        });
+                    }, 0);
+                    return content;
+                }
+            },
+            produtividade_unidades: {
+                name: "Relatório de Produtividade de Unidades",
+                params: [
+                    { id: 'paramUnidadeSaude', label: 'Unidade de Saúde (Opcional):', type: 'select', options: { 'todas': 'Todas as Unidades', 'U001': 'Hospital Central', 'U002': 'UBS Vila Feliz', 'U003': 'UBS Norte' } },
+                    { id: 'paramTipoAtendimentoProd', label: 'Tipo de Atendimento (Opcional):', type: 'select', options: { 'todos': 'Todos', 'consulta_medica': 'Consulta Médica', 'procedimento_enf': 'Procedimento Enfermagem', 'vacinacao': 'Vacinação' } }
+                ],
+                generate: (params) => {
+                    const unidadeSelecionada = params.paramUnidadeSaude;
+                    const nomeUnidade = document.querySelector(`#paramUnidadeSaude option[value="${unidadeSelecionada}"]`).textContent;
+                    const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'];
+                    const produtividadeMensalUnidade = [350, 380, 410, 390, 420, 450]; // Dados para UBS Vila Feliz, por ex.
+
+                    let content = `<h4>1. Introdução (Período: ${formatDateForDisplay(params.paramPeriodoInicio)} a ${formatDateForDisplay(params.paramPeriodoFim)})</h4>
+                                   <p>Análise da produtividade para <strong>${nomeUnidade}</strong>. Total de <strong>${produtividadeMensalUnidade.reduce((a, b) => a + b, 0)}</strong> atendimentos realizados no semestre (simulado).</p>
+                                   <h4>2. Atendimentos por Tipo (Consolidado do Período)</h4>
+                                   <div class="report-chart-container"><canvas id="reportChartAtendimentosTipo"></canvas></div>`;
+
+                    if (unidadeSelecionada !== 'todas') {
+                        content += `<h4>3. Tendência de Produtividade Mensal (${nomeUnidade})</h4>
+                                    <div class="report-chart-container"><canvas id="reportChartProdutividadeMensalUnidade"></canvas></div>`;
+                    } else {
+                        content += `<h4>3. Detalhamento por Unidade (Total no Período)</h4>
+                                   <table><thead><tr><th>Unidade</th><th>Consultas Médicas</th><th>Proced. Enfermagem</th><th>Vacinas Aplicadas</th><th>Total</th></tr></thead>
+                                   <tbody>
+                                     <tr><td>Hospital Central</td><td>7200</td><td>5100</td><td>1800</td><td>14100</td></tr>
+                                     <tr><td>UBS Vila Feliz</td><td>${produtividadeMensalUnidade.reduce((a, b) => a + b, 0)}</td><td>9000</td><td>5400</td><td>19200</td></tr>
+                                     <tr><td>UBS Norte</td><td>4500</td><td>7800</td><td>5100</td><td>17400</td></tr>
+                                   </tbody></table>`;
+                    }
+                    content += `<h4>4. Considerações</h4>
+                                <p>A produtividade geral se manteve estável com leve aumento. ${nomeUnidade !== 'Todas as Unidades' ? `A unidade ${nomeUnidade} demonstrou uma tendência crescente nos últimos meses.` : 'A UBS Vila Feliz foi a unidade com maior número de procedimentos de enfermagem e vacinas.'} Recomenda-se investigar gargalos em unidades com menor produtividade ou tempo de espera elevado.</p>`;
+
+                    setTimeout(() => {
+                        renderChart('reportChartAtendimentosTipo', 'bar', {
+                            labels: ['Consultas', 'Procedimentos', 'Vacinação', 'Exames'],
+                            datasets: [{ label: 'Nº de Atendimentos', data: [(unidadeSelecionada !== 'todas' ? 1200 : 16200), (unidadeSelecionada !== 'todas' ? 900 : 21900), (unidadeSelecionada !== 'todas' ? 500 : 12300), (unidadeSelecionada !== 'todas' ? 300 : 5000)], backgroundColor: 'var(--info-color)' }]
+                        });
+                        if (unidadeSelecionada !== 'todas') {
+                            renderChart('reportChartProdutividadeMensalUnidade', 'line', {
+                                labels: meses,
+                                datasets: [{ label: `Atendimentos ${nomeUnidade}`, data: produtividadeMensalUnidade, borderColor: 'var(--highlight-color)', backgroundColor: 'rgba(26, 188, 156, 0.1)', tension: 0.3, fill: true }]
+                            });
+                        }
+                    }, 0);
+                    return content;
+                }
+            },
+            cobertura_vacinal_detalhada: {
+                name: "Relatório de Cobertura Vacinal Detalhada",
+                params: [
+                    { id: 'paramVacina', label: 'Vacina Específica:', type: 'select', options: { 'todas': 'Todas Principais', 'gripe': 'Gripe', 'sarampo': 'Sarampo (SCR)', 'polio': 'Poliomielite', 'covid': 'COVID-19' } },
+                    { id: 'paramFaixaEtariaVacina', label: 'Faixa Etária (Opcional):', type: 'text', placeholder: 'Ex: 1 a 5 anos' }
+                ],
+                generate: (params) => {
+                    const vacina = document.querySelector(`#paramVacina option[value="${params.paramVacina}"]`).textContent;
+                    const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'];
+                    const coberturaGripeTrend = [60, 65, 70, 85, 90, 92];
+                    const coberturaSarampoTrend = [88, 87, 85, 86, 88, 90];
+
+
+                    let content = `<h4>1. Panorama da Cobertura Vacinal (Período: ${formatDateForDisplay(params.paramPeriodoInicio)} a ${formatDateForDisplay(params.paramPeriodoFim)})</h4>
+                                   <p>Análise da cobertura para <strong>${vacina}</strong>. ${params.paramFaixaEtariaVacina ? ` Faixa Etária: <strong>${params.paramFaixaEtariaVacina}</strong>.` : ''}</p>
+                                   <h4>2. Cobertura por Vacina e Região (%)</h4>
+                                   <table><thead><tr><th>Vacina</th><th>Reg. Norte</th><th>Reg. Sul</th><th>Reg. Leste</th><th>Reg. Oeste</th><th>Reg. Centro</th><th>Média Municipal</th></tr></thead>
+                                   <tbody>
+                                     <tr><td>Gripe</td><td>88%</td><td>95%</td><td>90%</td><td>91%</td><td>94%</td><td style="font-weight:bold;">92%</td></tr>
+                                     <tr><td>Sarampo (SCR)</td><td>85%</td><td>92%</td><td>88%</td><td>89%</td><td>93%</td><td style="font-weight:bold;">90%</td></tr>
+                                     <tr><td>Poliomielite</td><td>94%</td><td>96%</td><td>95%</td><td>95%</td><td>97%</td><td style="font-weight:bold;">95%</td></tr>
+                                   </tbody></table>`;
+                    if (params.paramVacina === 'gripe' || params.paramVacina === 'todas') {
+                        content += `<h4>3. Tendência Mensal da Cobertura Vacinal (Gripe)</h4>
+                                   <div class="report-chart-container"><canvas id="reportChartCoberturaGripe"></canvas></div>`;
+                    }
+                    if (params.paramVacina === 'sarampo' || params.paramVacina === 'todas') {
+                        content += `<h4>4. Tendência Mensal da Cobertura Vacinal (Sarampo)</h4>
+                                   <div class="report-chart-container"><canvas id="reportChartCoberturaSarampo"></canvas></div>`;
+                    }
+                    content += `<h4>5. Observações</h4>
+                                <p>A cobertura para Poliomielite permanece alta e estável. A vacina contra Gripe atingiu a meta no período. A cobertura para Sarampo na Região Norte (85%) ainda está abaixo da meta de 95%, indicando necessidade de ações focadas.</p>`;
+                    setTimeout(() => {
+                        if (params.paramVacina === 'gripe' || params.paramVacina === 'todas') {
+                            renderChart('reportChartCoberturaGripe', 'line', {
+                                labels: meses,
+                                datasets: [{ label: 'Cobertura Gripe (%)', data: coberturaGripeTrend, borderColor: 'var(--success-color)', backgroundColor: 'rgba(46, 204, 113, 0.1)', tension: 0.3, fill: true }]
+                            });
+                        }
+                        if (params.paramVacina === 'sarampo' || params.paramVacina === 'todas') {
+                            renderChart('reportChartCoberturaSarampo', 'line', {
+                                labels: meses,
+                                datasets: [{ label: 'Cobertura Sarampo (%)', data: coberturaSarampoTrend, borderColor: 'var(--accent-color)', backgroundColor: 'rgba(230, 126, 34, 0.1)', tension: 0.3, fill: true }]
+                            });
+                        }
+                    }, 0);
+                    return content;
+                }
+            }
+            // Adicionar templates para 'alocacao_rh' e 'filas_espera_tendencia' seguindo o padrão
+        };
+
+        function formatDateForDisplay(dateStr_YYYY_MM_DD) {
+            if (!dateStr_YYYY_MM_DD) return 'N/A';
+            const parts = dateStr_YYYY_MM_DD.split('-');
+            if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            return dateStr_YYYY_MM_DD;
+        }
+
+        reportTypeSelector.addEventListener('change', function () {
+            dynamicParamsContainer.innerHTML = '';
+            const selectedType = this.value;
+            activeReportCharts.forEach(chart => chart.destroy());
+            activeReportCharts = [];
+
+            const today = new Date();
+            const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+            const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
+
+            // Adicionar campos de Data Padrão Primeiro
+            const defaultStartDateInput = createFormGroup('paramPeriodoInicio', 'Data de Início:', 'date').querySelector('input');
+            defaultStartDateInput.value = firstDayOfMonth;
+            dynamicParamsContainer.appendChild(defaultStartDateInput.parentElement);
+
+            const defaultEndDateInput = createFormGroup('paramPeriodoFim', 'Data de Fim:', 'date').querySelector('input');
+            defaultEndDateInput.value = lastDayOfMonth;
+            dynamicParamsContainer.appendChild(defaultEndDateInput.parentElement);
+
+            defaultStartDateInput.disabled = !selectedType;
+            defaultEndDateInput.disabled = !selectedType;
+            generateReportBtn.disabled = !selectedType;
+
+
+            if (selectedType && reportTemplates[selectedType] && reportTemplates[selectedType].params) {
+                reportTemplates[selectedType].params.forEach(param => {
+                    const formGroup = createFormGroup(param.id, param.label, param.type, param.options, param.placeholder);
+                    dynamicParamsContainer.appendChild(formGroup);
+                });
+            }
+            reportOutputArea.innerHTML = `<div class="report-placeholder"><i class="fas fa-file-alt"></i><p>Selecione um tipo de relatório e defina os parâmetros para gerar a visualização.</p></div>`;
+            reportActionsContainer.style.display = 'none';
+            reportTitlePreview.textContent = "Visualização do Relatório";
+        });
+
+        function createFormGroup(id, label, type, options = null, placeholder = '') {
+            const group = document.createElement('div');
+            group.classList.add('form-group');
+
+            const lbl = document.createElement('label');
+            lbl.htmlFor = id;
+            lbl.textContent = label;
+            group.appendChild(lbl);
+
+            let input;
+            if (type === 'select') {
+                input = document.createElement('select');
+                input.id = id;
+                input.name = id;
+                for (const val in options) {
+                    const opt = document.createElement('option');
+                    opt.value = val;
+                    opt.textContent = options[val];
+                    input.appendChild(opt);
+                }
+            } else {
+                input = document.createElement('input');
+                input.type = type;
+                input.id = id;
+                input.name = id;
+                if (placeholder) input.placeholder = placeholder;
+            }
+            group.appendChild(input);
+            return group;
+        }
+
+        function renderChart(canvasId, type, data, options = {}) {
+            const canvasElement = document.getElementById(canvasId);
+            if (!canvasElement) { console.error(`Canvas com ID ${canvasId} não encontrado.`); return; }
+            const ctx = canvasElement.getContext('2d');
+
+            const defaultOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } } },
+                scales: { y: { ticks: { font: { size: 10 } } }, x: { ticks: { font: { size: 10 } } } }
+            };
+            const chart = new Chart(ctx, { type, data, options: { ...defaultOptions, ...options } });
+            activeReportCharts.push(chart);
+        }
+
+        generateReportBtn.addEventListener('click', () => {
+            const reportType = reportTypeSelector.value;
+            if (!reportType || !reportTemplates[reportType]) {
+                alert('Selecione um tipo de relatório válido.');
+                return;
+            }
+
+            const params = {
+                paramPeriodoInicio: document.getElementById('paramPeriodoInicio').value,
+                paramPeriodoFim: document.getElementById('paramPeriodoFim').value
+            };
+
+            if (!params.paramPeriodoInicio || !params.paramPeriodoFim) {
+                alert('Por favor, selecione o período (Data de Início e Fim).');
+                return;
+            }
+
+            if (reportTemplates[reportType].params) {
+                reportTemplates[reportType].params.forEach(param => {
+                    const el = document.getElementById(param.id);
+                    if (el) params[param.id] = el.value;
+                });
+            }
+
+            activeReportCharts.forEach(chart => chart.destroy());
+            activeReportCharts = [];
+
+            reportTitlePreview.textContent = reportTemplates[reportType].name;
+            reportOutputArea.innerHTML = `<div class="report-placeholder" style="padding: 30px;"><i class="fas fa-spinner fa-spin"></i><p>Gerando relatório, aguarde...</p></div>`;
+
+            setTimeout(() => {
+                try {
+                    reportOutputArea.innerHTML = reportTemplates[reportType].generate(params);
+                    reportActionsContainer.style.display = 'flex';
+                } catch (error) {
+                    console.error("Erro ao gerar relatório:", error);
+                    reportOutputArea.innerHTML = `<div class="report-placeholder" style="color:var(--danger-color);"><i class="fas fa-exclamation-triangle"></i><p>Erro ao gerar o relatório. Verifique os parâmetros ou tente novamente.</p></div>`;
+                    reportActionsContainer.style.display = 'none';
+                }
+            }, 700); // Aumentar delay para dar tempo de renderizar gráficos complexos e melhorar percepção
+        });
+
+        document.getElementById('printReportBtn')?.addEventListener('click', () => {
+            const reportHTML = document.getElementById('reportOutputArea').innerHTML;
+            const reportTitle = document.getElementById('reportTitlePreview').textContent;
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write('<html><head><title>Imprimir: ' + reportTitle + '</title>');
+            printWindow.document.write(`
+                <style>
+                    body { font-family: 'Arial', sans-serif; margin: 20px; color: #333; }
+                    h2, h3, h4 { color: #0A3D62; font-family: 'Montserrat', sans-serif; }
+                    h4 { font-size: 1.2em; border-bottom: 1px solid #1ABC9C; padding-bottom: 5px; margin-top: 20px; margin-bottom: 10px;}
+                    table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 0.9em; }
+                    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+                    th { background-color: #f0f0f0; font-weight: bold; }
+                    p { margin-bottom: 10px; line-height: 1.6; }
+                    .report-chart-container { width: 90% !important; max-width:600px !important; height: auto !important; margin: 20px auto; page-break-inside: avoid; }
+                    canvas { max-width: 100%; height: auto !important; }
+                    @media print {
+                        body { margin: 0.5in; }
+                        .report-actions, .sidebar, .top-header, .report-parameters-panel .btn, .report-output-header .report-actions { display: none !important; }
+                        .report-generator-layout, .report-output-panel { display: block !important; box-shadow: none !important; border: none !important; padding:0 !important; }
+                         #reportOutputArea h4 { color: #333 !important; border-bottom-color: #888 !important;}
+                    }
+                </style>
+            `);
+            printWindow.document.write('</head><body>');
+            printWindow.document.write(`<h2>${reportTitle}</h2>`);
+
+            // Para os gráficos, capturamos como imagem e inserimos
+            const chartsPromises = [];
+            activeReportCharts.forEach((chartInstance, index) => {
+                if (chartInstance.canvas) {
+                    const promise = new Promise((resolve) => {
+                        // Adicionar um pequeno delay para garantir que a animação do chart (se houver) completou.
+                        setTimeout(() => {
+                            try {
+                                const imgData = chartInstance.toBase64Image();
+                                const chartContainer = document.getElementById(chartInstance.canvas.id).parentElement;
+                                if (chartContainer) {
+                                    // Criar um placeholder no printWindow para o gráfico
+                                    const chartPlaceholderId = `chartPrintPlaceholder${index}`;
+                                    const originalChartHTML = `<div class="report-chart-container" id="${chartPlaceholderId}">${chartContainer.innerHTML}</div>`; // Mantém o canvas original para referência
+
+                                    // Substitui o canvas no printWindow por uma imagem
+                                    const tempDiv = printWindow.document.createElement('div');
+                                    tempDiv.innerHTML = originalChartHTML;
+                                    const canvasInPrintWindow = tempDiv.querySelector('canvas');
+                                    if (canvasInPrintWindow) {
+                                        const img = printWindow.document.createElement('img');
+                                        img.src = imgData;
+                                        img.style.maxWidth = '100%';
+                                        img.style.height = 'auto';
+                                        img.style.display = 'block';
+                                        img.style.margin = '10px auto';
+                                        canvasInPrintWindow.parentNode.replaceChild(img, canvasInPrintWindow);
+                                        resolve(tempDiv.innerHTML);
+                                    } else { resolve(originalChartHTML); /* Fallback para o HTML original se o canvas não for encontrado */ }
+                                } else { resolve(''); }
+                            } catch (e) {
+                                console.error("Erro ao converter chart para imagem:", e);
+                                resolve(''); // Retorna string vazia em caso de erro
+                            }
+                        }, 200); // Aumentar delay se os gráficos não estiverem completos
+                    });
+                    chartsPromises.push(promise);
+                }
+            });
+
+            Promise.all(chartsPromises).then(chartImagesHTML => {
+                let finalReportHTML = reportHTML;
+                // Substituir os containers de canvas no HTML original pelos que contêm as imagens
+                activeReportCharts.forEach((chartInstance, index) => {
+                    if (chartInstance.canvas) {
+                        const originalCanvasContainer = document.getElementById(chartInstance.canvas.id).parentElement;
+                        if (originalCanvasContainer) {
+                            // Criar um regex para encontrar o container do canvas no HTML do relatório
+                            // Isso é um pouco frágil, uma abordagem mais robusta usaria IDs únicos para os containers
+                            const regex = new RegExp(`<div class="report-chart-container"[^>]*><canvas id="${chartInstance.canvas.id}"[^>]*><\/canvas><\/div>`, 'g');
+                            finalReportHTML = finalReportHTML.replace(regex, chartImagesHTML[index]);
+                        }
+                    }
+                });
+
+                printWindow.document.write(finalReportHTML);
+                printWindow.document.write('</body></html>');
+                printWindow.document.close();
+                printWindow.focus();
+
+                // O ideal é chamar print() após as imagens carregarem.
+                // Para simplificar, um timeout pode ajudar.
+                setTimeout(() => {
+                    printWindow.print();
+                }, 500); // Ajuste conforme necessário
+            });
+
+        });
+        document.getElementById('exportCsvBtn')?.addEventListener('click', () => {
+            alert('Funcionalidade de Exportar CSV a ser implementada. (Simularia a extração de dados das tabelas do relatório para um arquivo CSV).');
+        });
+        document.getElementById('exportPdfBtn')?.addEventListener('click', () => {
+            alert('Funcionalidade de Exportar PDF a ser implementada (requer biblioteca como jsPDF + html2canvas ou puppeteer no backend).');
+        });
+
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            reportTypeSelector.dispatchEvent(new Event('change'));
+        });
+
+    </script>
+</body>
+
+</html>
+

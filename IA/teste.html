@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DiagnoMap - Teste Agente de IA</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    :root {
+      --primary-color: #075985;
+      --secondary-color: #34495e;
+      --accent-color: #f59e0b;
+      --highlight-color: #10b981;
+      --danger-color: #ef4444;
+      --warning-color: #f97316;
+      --info-color: #3b82f6;
+      --success-color: #22c55e;
+
+      --text-light: #f8fafc;
+      --text-dark: #1f2937;
+      --text-muted: #6b7280;
+
+      --bg-light: #FFFFFF;
+      --bg-base: #f0f4f8;
+      --bg-surface: #FFFFFF;
+      --bg-code: #282c34;
+      /* Fundo escuro para blocos de código */
+
+      --border-color: #e5e7eb;
+      --border-radius-sm: 6px;
+      --border-radius-md: 10px;
+      --border-radius-lg: 12px;
+
+      --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 5px 15px rgba(0, 0, 0, 0.07);
+      --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.08);
+
+      --font-primary: 'Roboto', sans-serif;
+      --font-secondary: 'Montserrat', sans-serif;
+      --font-code: 'Consolas', 'Monaco', ' Liberation Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: var(--font-primary);
+      margin: 0;
+      background: var(--bg-base);
+      color: var(--text-dark);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px;
+      min-height: 100vh;
+    }
+
+    .test-container {
+      background-color: var(--bg-surface);
+      padding: 30px 40px;
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--shadow-md);
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .test-container h2 {
+      font-family: var(--font-secondary);
+      color: var(--primary-color);
+      font-size: 1.8em;
+      font-weight: 600;
+      margin-bottom: 25px;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .test-container h2 .logo-icon {
+      font-size: 1.2em;
+      color: var(--highlight-color);
+    }
+
+
+    label {
+      font-weight: 500;
+      font-size: 0.95em;
+      color: var(--secondary-color);
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    textarea#jsonInput {
+      /* Target específico para o textarea de input */
+      width: 100%;
+      height: 180px;
+      font-size: 0.95em;
+      padding: 12px;
+      border-radius: var(--border-radius-sm);
+      border: 1px solid var(--border-color);
+      font-family: var(--font-code);
+      line-height: 1.5;
+      margin-bottom: 15px;
+      background-color: #fdfdfe;
+      color: var(--text-dark);
+      /* Cor do texto dentro do textarea */
+    }
+
+    textarea#jsonInput:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(7, 89, 133, 0.15);
+    }
+
+    .actions-container {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      /* Para botões quebrarem em telas menores */
+    }
+
+    button.btn,
+    a.btn {
+      padding: 12px 25px;
+      font-size: 1em;
+      font-weight: 500;
+      border-radius: var(--border-radius-md);
+      cursor: pointer;
+      transition: filter 0.2s ease, transform 0.15s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      justify-content: center;
+      border: none;
+    }
+
+    button.btn:hover,
+    a.btn:hover {
+      filter: brightness(110%);
+    }
+
+    button.btn:active,
+    a.btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: #064e6f;
+    }
+
+    .btn-secondary-outline {
+      background-color: transparent;
+      color: var(--secondary-color);
+      border: 2px solid var(--secondary-color);
+      font-weight: 500;
+    }
+
+    .btn-secondary-outline:hover {
+      background-color: var(--secondary-color);
+      color: white;
+    }
+
+    #resultado {
+      margin-top: 30px;
+      background: var(--bg-light);
+      /* Fundo um pouco diferente para resultado */
+      padding: 25px;
+      border-radius: var(--border-radius-md);
+      border: 1px solid var(--border-color);
+      min-height: 100px;
+      font-size: 0.95em;
+      line-height: 1.7;
+      box-shadow: var(--shadow-sm);
+    }
+
+    #resultado strong {
+      color: var(--primary-color);
+      font-family: var(--font-secondary);
+      font-weight: 600;
+    }
+
+    #resultado em {
+      font-style: italic;
+      color: var(--text-muted)
+    }
+
+    #resultado ul {
+      list-style-type: disc;
+      margin-left: 25px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      padding-left: 0;
+    }
+
+    #resultado li {
+      margin-bottom: 6px;
+    }
+
+    #resultado .error-message {
+      color: var(--danger-color);
+      font-weight: bold;
+    }
+
+    #resultado .loading-message {
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    /* Estilo para JSON formatado em <pre> */
+    #resultado pre {
+      background-color: var(--bg-code);
+      color: #abb2bf;
+      /* Light text for dark background */
+      padding: 20px;
+      border-radius: var(--border-radius-sm);
+      overflow-x: auto;
+      font-family: var(--font-code);
+      font-size: 0.9em;
+      line-height: 1.6;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+      margin-top: 10px;
+    }
+
+    .logo-text-group-page h1 {
+      font-family: var(--font-secondary);
+      font-size: 1.5em;
+      line-height: 1.1;
+      color: var(--primary-color);
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .logo-text-group-page .logo-diagno {
+      color: var(--text-dark);
+      font-weight: 500;
+    }
+
+    .logo-text-group-page .logo-map {
+      color: var(--highlight-color);
+      font-weight: 700;
+    }
+
+    .page-footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 0.85em;
+      color: var(--text-muted);
+    }
+
+    .button-container {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="logo-text-group-page">
+    <h1>
+      <i class="fas fa-heart-pulse" style="color:var(--highlight-color); margin-right: 8px;"></i>
+      <span class="logo-diagno">Diagno</span><span class="logo-map">Map</span>
+    </h1>
+  </div>
+
+  <div class="test-container">
+    <h2><i class="fas fa-cogs logo-icon"></i> Testar Agente de IA (/analise)</h2>
+    <label for="jsonInput">Cole aqui o JSON para enviar:</label>
+    <textarea id="jsonInput">{
+    "dados": [
+        { "endereco": "Rua das Flores, Centro", "diagnostico": "Dengue", "sintomas": "febre alta, dor de cabeça, dor atrás dos olhos" },
+        { "endereco": "Avenida Brasil, Bairro Novo", "diagnostico": "Gripe", "sintomas": "tosse, febre, dor no corpo" }
+    ]
+}</textarea>
+    <div class="actions-container button-container">
+      <button class="btn btn-primary" onclick="enviar()"><i class="fas fa-paper-plane"></i> Enviar para
+        /analise</button>
+      <a href="utilizar.html" class="btn btn-secondary-outline"><i class="fas fa-question-circle"></i> Como utilizar</a>
+      <a href="../index.html" class="btn btn-secondary-outline"><i class="fas fa-solid fa-rotate-left"></i> Voltar</a>
+    </div>
+
+    <div id="resultado">
+      <p>Aguardando envio para análise...</p>
+    </div>
+  </div>
+
+  <footer class="page-footer">
+    <p>&copy; 2025 DiagnoMap - Demonstração da API de Análise</p>
+  </footer>
+
+  <script>
+    function markdownToHtml(text) {
+      if (typeof text !== 'string') return '';
+
+      text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+      text = text.replace(/^\s*[\-\*]\s+(.+)/gm, '<li>$1</li>');
+      text = text.replace(/(<li>.*?<\/li>\s*)+/gs, (match) => `<ul>${match.trim().replace(/\s*$/, '')}</ul>`);
+      text = text.replace(/<br>\s*<ul>/g, '<ul>').replace(/<\/ul>\s*<br>/g, '</ul>');
+
+      let paragraphs = text.split(/\n\s*\n/);
+      text = paragraphs.map(p => {
+        if (p.startsWith('<ul>') && p.endsWith('</ul>')) {
+          return p;
+        }
+        // Evitar adicionar <p> em volta de HTML já formatado se a IA retornar HTML complexo
+        if (p.match(/<\w+.*?>.*?<\/\w+>/s) && !p.includes('\n')) { // Se já parece HTML e não tem quebras de linha internas para justificar <p>
+          return p;
+        }
+        return `<p>${p.replace(/\n/g, '<br>')}</p>`;
+      }).join('');
+
+      text = text.replace(/<p><br\s*\/?>\s*<\/p>/g, '').replace(/<p>\s*<\/p>/g, '');
+      text = text.replace(/<p>(<ul>.*?<\/ul>)<\/p>/gs, '$1');
+      text = text.replace(/<p>(<pre><code>.*?<\/code><\/pre>)<\/p>/gs, '$1'); // Para o caso de blocos de código em markdown
+
+      return text;
+    }
+
+    async function enviar() {
+      const input = document.getElementById('jsonInput').value;
+      const resultadoDiv = document.getElementById('resultado');
+      let jsonPayload;
+
+      try {
+        jsonPayload = JSON.parse(input);
+      } catch (e) {
+        resultadoDiv.innerHTML = '<p class="error-message">JSON de entrada inválido!</p>';
+        return;
+      }
+
+      resultadoDiv.innerHTML = '<p class="loading-message"><i class="fas fa-spinner fa-spin"></i> Enviando e processando...</p>';
+
+      try {
+        const resp = await fetch('http://localhost:3001/analise', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(jsonPayload) // Envia o JSON parseado e re-stringificado
+        });
+
+        if (!resp.ok) {
+          let errorMsg = `Erro na requisição: ${resp.status} ${resp.statusText}`;
+          try {
+            const errorData = await resp.json();
+            if (errorData && errorData.error) { errorMsg += ` - ${errorData.error}`; }
+            else if (errorData && errorData.message) { errorMsg += ` - ${errorData.message}`; }
+          } catch (e) { /* ignora */ }
+          throw new Error(errorMsg);
+        }
+
+        const data = await resp.json();
+        let outputHTML = '';
+
+        if (data && typeof data.resultado === 'string') {
+          // Tenta detectar se a string 'resultado' é, ela mesma, um JSON
+          let resultadoContent = data.resultado;
+          try {
+            const parsedResultado = JSON.parse(data.resultado);
+            // Se parseou com sucesso, é um JSON stringificado, então vamos formatá-lo.
+            outputHTML = '<strong>Resultado da Análise (JSON):</strong><br><pre>' + JSON.stringify(parsedResultado, null, 2) + '</pre>';
+          } catch (e) {
+            // Não é um JSON stringificado, então tratar como Markdown
+            outputHTML = '<strong>Resultado da Análise (Markdown):</strong>' + markdownToHtml(data.resultado);
+          }
+        } else if (data && typeof data.resultado === 'object') { // Se o resultado já é um objeto JSON
+          outputHTML = '<strong>Resultado da Análise (JSON):</strong><br><pre>' + JSON.stringify(data.resultado, null, 2) + '</pre>';
+        } else if (data) { // Fallback: mostrar a estrutura completa da resposta se 'resultado' não estiver como esperado
+          outputHTML = '<strong>Resposta Completa Recebida (Estrutura):</strong><br><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+        } else {
+          outputHTML = '<p class="error-message">Resposta da IA vazia ou em formato não reconhecido.</p>';
+        }
+        resultadoDiv.innerHTML = outputHTML;
+
+      } catch (e) {
+        console.error("Erro no fetch:", e);
+        resultadoDiv.innerHTML = `<p class="error-message">Erro ao enviar requisição: ${e.message}. Verifique se o servidor da IA está rodando em http://localhost:3001 e acessível.</p>`;
+      }
+    }
+  </script>
+</body>
+
+</html>
